@@ -1,1 +1,1 @@
-# GlasgowUniversityBoatClub
+# Glasgow University Boat Club Website
