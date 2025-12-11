@@ -1,65 +1,51 @@
 import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="relative h-screen">
+      <div className="absolute inset-0">
+        <div className="absolute inset-0 bg-black/70"></div>
+        {/* Diagonal yellow accent */}
+        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-r from-[#ffdc36] to-[#ffdc36]/80 transform origin-bottom-left skew-y-2"></div>
+      </div>
+
+      <div className="relative h-full flex items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="max-w-4xl">
+            <div className="inline-block mb-6">
+              <div className="bg-[#ffdc36] text-black px-4 py-2 transform -skew-x-12 inline-block">
+                <span className="block transform skew-x-12 tracking-wider text-sm uppercase">Since 1877</span>
+              </div>
+            </div>
+            <h1 className="text-white mb-6 leading-tight">
+              <span className="block text-6xl sm:text-7xl lg:text-8xl uppercase tracking-tight">Glasgow</span>
+              <span className="block text-6xl sm:text-7xl lg:text-8xl uppercase tracking-tight">University</span>
+              <span className="block text-6xl sm:text-7xl lg:text-8xl uppercase tracking-tight text-[#ffdc36]">Boat Club</span>
+            </h1>
+            <div className="h-1 w-32 bg-[#ffdc36] mb-8"></div>
+            <p className="text-white text-xl sm:text-2xl mb-12 max-w-2xl">
+              Excellence in rowing. Join Scotland&apos;s premier university rowing club and become part of our legacy.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link
+                href="/join"
+                className="group bg-[#ffdc36] text-black px-10 py-4 uppercase tracking-wider hover:bg-white transition-all duration-300 text-center inline-flex items-center justify-center gap-3"
+              >
+                <span>Join Now</span>
+                <ArrowRight className="group-hover:translate-x-1 transition-transform" size={20} />
+              </Link>
+              <Link
+                href="/about"
+                className="bg-transparent border-2 border-white text-white px-10 py-4 uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 text-center"
+              >
+                Learn More
+              </Link>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+      </div>
     </div>
   );
 }
