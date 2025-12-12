@@ -137,27 +137,32 @@ export default function Committee() {
   const lastThree = others.slice(8);
 
   return (
-    <section id="committee" className="py-32 bg-gray-1000 mt-28">
-      <div className="max-w-[1400px] mx-auto px-6 sm:px-8 lg:px-10">
-        <div className="mb-24">
-          <div className="inline-block mb-6">
-            <div className="h-1.5 w-28 bg-[#ffdc36]"></div>
+    <section id="committee" className="bg-gray-1000 mt-20">
+      <div className="mx-auto px-6 sm:px-8 lg:px-10">
+        <section className="relative py-24 bg-black text-white overflow-hidden">
+          <div className="absolute top-5 right-5 text-white/5 text-[15rem] uppercase tracking-tight leading-none pointer-events-none">
+            Committee
           </div>
-          <h2 className="text-white uppercase tracking-tight mb-8">
-            <span className="block text-6xl sm:text-7xl lg:text-8xl">
-              Meet The
-            </span>
-            <span className="block text-6xl sm:text-7xl lg:text-8xl">
-              Committee
-            </span>
-          </h2>
-          <p className="text-gray-300 text-2xl max-w-4xl">
-            The dedicated team leading Glasgow University Boat Club this year.
-          </p>
-        </div>
+          <div className="absolute bottom-0 left-0 w-1/3 h-full bg-[#ffdc36] transform origin-bottom-left skew-x-6 -translate-x-1/3 opacity-20"></div>
+
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+            <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
+            <h1 className="text-white uppercase tracking-tight mb-6">
+              <span className="block text-5xl sm:text-6xl lg:text-7xl">
+                Meet The
+              </span>
+              <span className="block text-5xl sm:text-6xl lg:text-7xl text-[#ffdc36]">
+                Committee
+              </span>
+            </h1>
+            <p className="text-gray-300 text-xl max-w-3xl">
+              The dedicated team leading Glasgow University Boat Club this year.
+            </p>
+          </div>
+        </section>
 
         {/* Club Captain - Featured */}
-        <div className="mb-16">
+        <div className="mt-10 mb-16">
           <div className="group bg-white hover:shadow-2xl transition-all duration-300 border-l-4 border-[#c4a522] hover:border-[#ffdc36] overflow-hidden max-w-5xl mx-auto">
             <div className="grid md:grid-cols-2 gap-10">
               <div className="aspect-square overflow-hidden relative">

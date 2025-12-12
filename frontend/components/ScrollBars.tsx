@@ -50,7 +50,7 @@ export function ScrollBars() {
 
       {/* Left inner bar */}
       <div
-        className="fixed top-0 bottom-0 w-[10px] z-50 pointer-events-none transition-colors duration-20"
+        className="fixed top-0 bottom-0 w-[8px] z-50 pointer-events-none transition-colors duration-20"
         style={{
           left: "40px",
           backgroundColor: getColor(),
@@ -59,7 +59,7 @@ export function ScrollBars() {
 
       {/* Right inner bar */}
       <div
-        className="fixed top-0 bottom-0 w-[10px] z-50 pointer-events-none transition-colors duration-20"
+        className="fixed top-0 bottom-0 w-[8px] z-50 pointer-events-none transition-colors duration-20"
         style={{
           right: "40px",
           backgroundColor: getColor(),

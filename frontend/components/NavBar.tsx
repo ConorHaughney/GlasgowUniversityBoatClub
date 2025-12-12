@@ -17,7 +17,7 @@ export default function NavBar() {
     { href: '/events', label: 'Events' },
     { href: '/photos', label: 'Photos' },
     { href: '/merch', label: 'Merch' },
-    { href: '/achievements', label: 'Our History' },
+    { href: '/our-history', label: 'Our History' },
     { href: '/alumni', label: 'Alumni' },
   ];
 
