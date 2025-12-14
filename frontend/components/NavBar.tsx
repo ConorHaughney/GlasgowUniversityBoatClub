@@ -15,7 +15,6 @@ export default function NavBar() {
     { href: '/committee', label: 'Committee' },
     { href: '/news', label: 'News' },
     { href: '/events', label: 'Events' },
-    { href: '/photos', label: 'Photos' },
     { href: '/merch', label: 'Merch' },
     { href: '/our-history', label: 'Our History' },
     { href: '/alumni', label: 'Alumni' },
@@ -24,19 +23,31 @@ export default function NavBar() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="bg-black shadow-lg fixed w-full top-0 z-50 border-b-2 border-[#ffdc36]">
+    <nav className="bg-black overflow-hidden shadow-lg fixed w-full top-0 z-50 border-b-2 border-[#ffdc36]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-24">
           <Link href="/" className="flex items-center gap-3">
-            <div className="relative h-16 w-16">
+            <div className="drop-shadow-[0_0_80px_rgba(255,215,0,1)] drop-shadow-[0_0_40px_rgba(255,215,0,0.8)]" style={{ filter: 'drop-shadow(0px 0px 80px rgba(255, 215, 0, 1)) drop-shadow(0px 0px 40px rgba(255, 215, 0, 0.8))' }}>
               <Image 
-                src="/GUBC_logo.jpg" 
+                src="/GUBC_logo_Clean.png"
                 alt="GUBC Logo" 
-                fill
-                className="object-contain"
+                width={64}
+                height={64}
+                className="object-contain drop-shadow-[0_0_40px_rgba(255,215,0,1)]"
               />
             </div>
           </Link>
+
+          {/* 
+          
+          <Image
+                        src="/GUBC_logo_Clean.png"
+                        alt="GUBC Logo"
+                        fill
+                        className="object-contain drop-shadow-[0_0_40px_rgba(255,215,0,1)]"
+                      />
+          
+          */}
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex space-x-8">
