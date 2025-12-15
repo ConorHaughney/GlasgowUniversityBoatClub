@@ -46,16 +46,24 @@ export default function MerchPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-    const handleItemClick = (itemName: string) => {
+  const handleItemClick = (itemName: string) => {
     setOrderItems((prev) => {
+      const existingIndex = prev.findIndex((item) => item.item === itemName);
+      if (existingIndex !== -1) {
+        const next = prev.filter((_, i) => i !== existingIndex);
+        return next.length > 0 ? next : [{ item: "", size: "", quantity: "1" }];
+      }
+
       const firstEmpty = prev.findIndex((item) => !item.item);
       if (firstEmpty !== -1) {
         const next = [...prev];
         next[firstEmpty] = { ...next[firstEmpty], item: itemName };
         return next;
       }
+
       return [...prev, { item: itemName, size: "", quantity: "1" }];
     });
+
     document
       .getElementById("order-form")
       ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
