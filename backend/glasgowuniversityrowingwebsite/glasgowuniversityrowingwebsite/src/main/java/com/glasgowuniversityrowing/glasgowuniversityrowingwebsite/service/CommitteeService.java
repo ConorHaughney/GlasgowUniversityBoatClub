@@ -29,7 +29,7 @@ public class CommitteeService {
 
     public List<MemberResponse> listCommittee() {
         return repo.findAllByOrderByOrderAsc().stream()
-                .map(m -> new MemberResponse(m.getId(), m.getRole(), m.getName(), m.getBio(), m.getImageUrl()))
+                .map(m -> new MemberResponse(m.getId(), m.getRole(), m.getName(), m.getBio(), m.getImageUrl(), m.getEmail()))
                 .toList();
     }
 
