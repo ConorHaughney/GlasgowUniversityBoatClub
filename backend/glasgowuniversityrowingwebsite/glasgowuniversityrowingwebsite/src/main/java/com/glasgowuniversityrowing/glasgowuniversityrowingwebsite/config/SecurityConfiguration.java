@@ -38,6 +38,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/api/committee").permitAll()
+                    .requestMatchers("/api/news/**").permitAll()
                     .requestMatchers("/committee/**").permitAll()
                     .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

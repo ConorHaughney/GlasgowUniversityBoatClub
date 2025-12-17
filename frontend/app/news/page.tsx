@@ -1,133 +1,87 @@
-'use client';
+"use client";
 
-import { ArrowRight, Newspaper } from 'lucide-react';
-import { ImageWithFallback } from '@/components/Fallback';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { ArrowRight, Newspaper } from "lucide-react";
+import { ImageWithFallback } from "@/components/Fallback";
 
-type NewsItem = {
-  id: string;
+type ApiArticle = {
+  id: number | string;
   title: string;
-  content: string;
-  image: string;
-  category: 'Race Result' | 'Club Update' | 'Achievement' | 'Event';
-  day: string;
-  month: string;
-  date: string;
+  body?: string;
+  image_url?: string;
+  author?: string;
+  published_at?: string;
 };
 
-const CATEGORY_COLORS: Record<NewsItem['category'], { bg: string; text: string }> = {
-  'Race Result': { bg: 'bg-black', text: 'text-[#ffdc36]' },
-  'Club Update': { bg: 'bg-[#ffdc36]', text: 'text-black' },
-  'Achievement': { bg: 'bg-gray-800', text: 'text-white' },
-  'Event': { bg: 'bg-gray-600', text: 'text-white' },
-};
-
-const NEWS: NewsItem[] = [
-  {
-    id: '1',
-    title: 'GUBC Wins Scottish Indoor Championships',
-    content: 'Our rowers dominated the indoor rowing competition with multiple podium finishes across all categories.',
-    image: 'https://images.unsplash.com/photo-1599726702015-92f38a6c7fc7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyb3dpbmd8ZW58MXx8fHwxNzY1MzIzMzYyfDA&ixlib=rb-4.0.3&q=80&w=1080',
-    category: 'Race Result',
-    day: '18',
-    month: 'Jan',
-    date: '2025-01-18',
-  },
-  {
-    id: '2',
-    title: 'New Boathouse Facilities Completed',
-    content: 'After months of renovation, our state-of-the-art boathouse facilities are now open to all members.',
-    image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwyfHxyb3dpbmclMjBib2F0aG91c2V8ZW58MXx8fHwxNzY1MzIzMzYyfDA&ixlib=rb-4.0.3&q=80&w=1080',
-    category: 'Club Update',
-    day: '12',
-    month: 'Jan',
-    date: '2025-01-12',
-  },
-  {
-    id: '3',
-    title: 'Members Achieve National Qualification',
-    content: 'Congratulations to our crews who have qualified for the National Rowing Championships.',
-    image: 'https://images.unsplash.com/photo-1606041008023-472accd41d82?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyb3dpbmclMjBjZWxlYnJhdGlvbnxlbnwxfHx8fDE3NjUzMjMzNjJ8MA&ixlib=rb-4.0.3&q=80&w=1080',
-    category: 'Achievement',
-    day: '08',
-    month: 'Jan',
-    date: '2025-01-08',
-  },
-  {
-    id: '4',
-    title: 'Spring Recruitment Drive Launches',
-    content: 'Join us for our Spring recruitment drive with free taster sessions for all interested students.',
-    image: 'https://images.unsplash.com/photo-1552674605-5defe6aa44bb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyb3dpbmclMjBuZXclMjBtZW1iZXJzfGVufDF8fHx8MTc2NTMyMzM2Mnww&ixlib=rb-4.0.3&q=80&w=1080',
-    category: 'Event',
-    day: '01',
-    month: 'Feb',
-    date: '2025-02-01',
-  },
-];
-
-function getCategoryColor(category: NewsItem['category']) {
-  return CATEGORY_COLORS[category];
+function excerpt(text?: string, len = 120) {
+  if (!text) return "";
+  const plain = text.replace(/<[^>]*>/g, "").trim();
+  if (plain.length <= len) return plain;
+  return plain.slice(0, len).replace(/\s+\S*$/, "") + "…";
 }
 
-function NewsCard({ item }: { item: NewsItem }) {
-  const colors = getCategoryColor(item.category);
-
-  return (
-    <div className="group relative">
-      {/* Decorative Border */}
-      <div className="absolute -top-4 -right-4 w-full h-full border-2 border-[#ffdc36] -z-10"></div>
-
-      <div className="bg-white overflow-hidden h-full flex flex-col">
-        {/* Image */}
-        <div className="relative overflow-hidden h-64">
-          {/* <ImageWithFallback
-            src={item.image}
-            alt={item.title}
-            fill
-            className="object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-500"
-          /> */}
-          {/* Diagonal Overlay */}
-          <div className="absolute inset-0 bg-gradient-to-br from-black/60 to-transparent"></div>
-
-          {/* Date Badge */}
-          <div className="absolute bottom-4 left-4 bg-[#ffdc36] text-black px-4 py-2 flex items-center gap-3">
-            <div className="text-center">
-              <div className="text-2xl uppercase tracking-tight leading-none">
-                {item.day}
-              </div>
-              <div className="text-xs uppercase tracking-wider">{item.month}</div>
-            </div>
-          </div>
-
-          {/* Category Badge */}
-          <div className="absolute top-4 right-4">
-            <div
-              className={`${colors.bg} ${colors.text} px-3 py-1 uppercase text-xs tracking-wider`}
-            >
-              {item.category}
-            </div>
-          </div>
-        </div>
-
-        {/* Content */}
-        <div className="p-6 flex-1 flex flex-col border-l-4 border-[#ffdc36]">
-          <h3 className="text-black uppercase tracking-wide text-xl mb-3 leading-tight group-hover:text-[#ffdc36] transition-colors">
-            {item.title}
-          </h3>
-          <p className="text-gray-700 leading-relaxed mb-4 flex-1">{item.content}</p>
-          <div className="flex items-center gap-2 text-black group-hover:text-[#ffdc36] uppercase text-xs tracking-wider transition-colors cursor-pointer">
-            <span>Read More</span>
-            <ArrowRight
-              size={16}
-              className="group-hover:translate-x-1 transition-transform"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+function formatDayMonth(iso?: string) {
+  if (!iso) return { day: "", month: "" };
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return { day: "", month: "" };
+  return {
+    day: String(d.getDate()).padStart(2, "0"),
+    month: d.toLocaleString(undefined, { month: "short" }),
+  };
 }
+
+const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 export default function NewsPage() {
+  const router = useRouter();
+  const [articles, setArticles] = useState<ApiArticle[] | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch(`${API}/api/news`);
+        if (!res.ok) throw new Error("Fetch failed");
+        const json = await res.json();
+        if (!mounted) return;
+        setArticles(Array.isArray(json) ? json : []);
+      } catch {
+        if (mounted) setArticles([]);
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const recent = (articles ?? []).slice().sort((a, b) => {
+    if (a.published_at && b.published_at)
+      return +new Date(b.published_at) - +new Date(a.published_at);
+    const ai = Number(a.id);
+    const bi = Number(b.id);
+    if (!Number.isNaN(ai) && !Number.isNaN(bi)) return bi - ai;
+    return 0;
+  });
+
+  const [visibleCount, setVisibleCount] = useState(4);
+  const [stage, setStage] = useState<0 | 1>(0); // 0 = initial, 1 = showed more (button becomes "See all" and navigates)
+
+  const visibleRecent = recent.slice(0, visibleCount);
+
+  function handleSeeButton() {
+    if (stage === 0) {
+      setVisibleCount((v) => Math.min(v + 4, recent.length));
+      setStage(1);
+    } else {
+      router.push("/news/all");
+    }
+  }
+
   return (
     <section id="news" className="bg-gray-1000 mt-20">
       <div className="mx-auto px-6 sm:px-8 lg:px-10">
@@ -136,9 +90,10 @@ export default function NewsPage() {
           <div className="absolute top-5 right-5 text-white/5 text-[15rem] uppercase tracking-tight leading-none pointer-events-none">
             News
           </div>
+
           <div className="absolute bottom-0 left-0 w-1/3 h-full bg-[#ffdc36] transform origin-bottom-left skew-x-6 -translate-x-1/3 opacity-20"></div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
             <h1 className="text-white uppercase tracking-tight mb-6">
               <span className="block text-5xl sm:text-6xl lg:text-7xl">
@@ -149,7 +104,8 @@ export default function NewsPage() {
               </span>
             </h1>
             <p className="text-gray-300 text-xl max-w-3xl">
-              Stay updated with the latest news from Glasgow University Boat Club.
+              Stay updated with the latest news from Glasgow University Boat
+              Club.
             </p>
           </div>
         </section>
@@ -160,43 +116,125 @@ export default function NewsPage() {
             <div className="mb-16">
               <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
               <h2 className="text-white uppercase tracking-tight">
-                <span className="block text-4xl sm:text-5xl lg:text-6xl">Recent</span>
+                <span className="block text-4xl sm:text-5xl lg:text-6xl">
+                  Recent
+                </span>
                 <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
                   Updates
                 </span>
               </h2>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {NEWS.map((item) => (
-                <NewsCard key={item.id} item={item} />
-              ))}
-            </div>
+            {loading ? (
+              <div className="text-gray-300">Loading…</div>
+            ) : visibleRecent.length === 0 ? (
+              <div className="text-gray-300">No recent articles.</div>
+            ) : (
+              <>
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  {visibleRecent.map((item) => {
+                    const { day, month } = formatDayMonth(item.published_at);
+                    return (
+                      <div key={String(item.id)} className="group relative">
+                        <div className="absolute -top-4 -right-4 w-full h-full border-2 border-[#ffdc36] -z-10"></div>
+
+                        <div className="bg-white overflow-hidden h-full flex flex-col">
+                          <div className="relative overflow-hidden h-44">
+                            {item.image_url && (
+                              <ImageWithFallback
+                                src={item.image_url}
+                                alt={item.title}
+                                fill
+                                className="object-cover transition-all duration-500"
+                              />
+                            )}
+                            <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-transparent" />
+                            <div className="absolute bottom-3 left-3 bg-[#ffdc36] text-black px-3 py-1 flex items-center gap-3">
+                              <div className="text-center">
+                                <div className="text-lg uppercase tracking-tight leading-none">
+                                  {day}
+                                </div>
+                                <div className="text-xs uppercase tracking-wider">
+                                  {month}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-6 flex-1 flex flex-col border-l-4 border-[#ffdc36]">
+                            <h3 className="text-black uppercase tracking-wide text-lg mb-2 leading-tight group-hover:text-[#ffdc36] transition-colors">
+                              <Link href={`/news/${item.id}`}>
+                                {item.title}
+                              </Link>
+                            </h3>
+                            <p className="text-gray-700 leading-relaxed mb-4 flex-1">
+                              {excerpt(item.body, 100)}
+                            </p>
+                            <div className="flex items-center gap-2 text-black group-hover:text-[#ffdc36] uppercase text-xs tracking-wider transition-colors">
+                              <Link
+                                href={`/news/${item.id}`}
+                                className="inline-flex items-center gap-2"
+                              >
+                                <span>Read More</span>
+                                <ArrowRight
+                                  size={16}
+                                  className="group-hover:translate-x-1 transition-transform"
+                                />
+                              </Link>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* See more / See all button */}
+                {recent.length > visibleCount && (
+                  <div className="mt-10 flex flex-col items-center">
+                    <button
+                      onClick={handleSeeButton}
+                      className="px-8 py-3 bg-[#ffdc36] text-black uppercase text-sm font-semibold tracking-wider hover:bg-[#e6c82f] transition-colors cursor-pointer"
+                    >
+                      {stage === 0 ? "See more" : "See all"}
+                    </button>
+
+                    {stage === 1 && visibleCount > 4 && (
+                      <button
+                        onClick={() => {
+                          setVisibleCount(4);
+                          setStage(0);
+                        }}
+                        className="mt-2 text-sm text-gray-300 hover:underline cursor-pointer"
+                        aria-label="Show fewer articles"
+                      >
+                        Show less
+                      </button>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </section>
 
         {/* Newsletter CTA */}
         <section className="relative py-32 bg-grey-1000 text-white overflow-hidden">
-          <div className="absolute inset-0 opacity-10">
-            {/* <ImageWithFallback
-              src="https://images.unsplash.com/photo-1678380051649-4a393ef35e57?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxyb3dpbmclMjB0ZWFtJTIwY2VsZWJyYXRpb258ZW58MXx8fHwxNzY1MzIzMzYyfDA&ixlib=rb-4.1.0&q=80&w=1080"
-              alt="GUBC News"
-              className="w-full h-full object-cover"
-            /> */}
-          </div>
           <div className="absolute inset-0 bg-[#ffdc36] transform skew-y-3 origin-bottom-left opacity-10"></div>
 
           <div className="relative max-w-4xl mx-auto px-4 text-center">
             <Newspaper size={64} className="text-[#ffdc36] mx-auto mb-8" />
             <h2 className="text-white uppercase tracking-tight mb-8">
-              <span className="block text-4xl sm:text-5xl lg:text-6xl">Stay In</span>
+              <span className="block text-4xl sm:text-5xl lg:text-6xl">
+                Stay In
+              </span>
               <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
                 The Loop
               </span>
             </h2>
             <p className="text-gray-300 text-xl leading-relaxed mb-12 max-w-2xl mx-auto">
-              Subscribe to our newsletter for the latest race results, club news, and
-              exclusive updates delivered straight to your inbox.
+              Subscribe to our newsletter for the latest race results, club
+              news, and exclusive updates delivered straight to your inbox.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <input
