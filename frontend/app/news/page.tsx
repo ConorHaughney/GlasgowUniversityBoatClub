@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, Newspaper } from "lucide-react";
+import { ArrowRight, Newspaper, Loader2, AlertCircle } from "lucide-react";
 import { ImageWithFallback } from "@/components/Fallback";
 
 type ApiArticle = {
@@ -38,6 +38,7 @@ export default function NewsPage() {
   const router = useRouter();
   const [articles, setArticles] = useState<ApiArticle[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -48,8 +49,9 @@ export default function NewsPage() {
         const json = await res.json();
         if (!mounted) return;
         setArticles(Array.isArray(json) ? json : []);
-      } catch {
-        if (mounted) setArticles([]);
+      } catch (err) {
+        console.error("News load error:", err);
+        if (mounted) setError("Failed to load news. Please try again later.");
       } finally {
         if (mounted) setLoading(false);
       }
@@ -126,9 +128,18 @@ export default function NewsPage() {
             </div>
 
             {loading ? (
-              <div className="text-gray-300">Loading…</div>
+              <div className="flex justify-center py-20">
+                <Loader2 className="animate-spin text-[#ffdc36]" size={48} />
+              </div>
+            ) : error ? (
+              <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                <AlertCircle size={48} className="mb-4 text-red-500" />
+                <p>{error}</p>
+              </div>
             ) : visibleRecent.length === 0 ? (
-              <div className="text-gray-300">No recent articles.</div>
+              <div className="py-12 text-gray-500 text-lg">
+                No recent articles found.
+              </div>
             ) : (
               <>
                 <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">

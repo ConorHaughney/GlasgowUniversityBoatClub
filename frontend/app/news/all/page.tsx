@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Newspaper } from 'lucide-react';
+import { ArrowRight, Newspaper, Loader2, AlertCircle, Search } from 'lucide-react';
 import { ImageWithFallback } from '@/components/Fallback';
 import { useRouter } from 'next/navigation';
 
@@ -38,6 +38,8 @@ export default function AllNewsPageClient() {
   const router = useRouter();
   const [articles, setArticles] = useState<Article[] | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     let mounted = true;
@@ -48,8 +50,9 @@ export default function AllNewsPageClient() {
         const json = await res.json();
         if (!mounted) return;
         setArticles(Array.isArray(json) ? json : []);
-      } catch {
-        if (mounted) setArticles([]);
+      } catch (err) {
+        console.error("News load error:", err);
+        if (mounted) setError("Failed to load news. Please try again later.");
       } finally {
         if (mounted) setLoading(false);
       }
@@ -68,6 +71,14 @@ export default function AllNewsPageClient() {
       if (!Number.isNaN(ai) && !Number.isNaN(bi)) return bi - ai;
       return 0;
     });
+
+  const filtered = sorted.filter((a) => {
+    const q = searchQuery.toLowerCase();
+    return (
+      a.title.toLowerCase().includes(q) ||
+      (a.body || '').toLowerCase().includes(q)
+    );
+  });
 
   return (
     <section id="news-all" className="bg-gray-1000 mt-20">
@@ -92,23 +103,44 @@ export default function AllNewsPageClient() {
         </section>
 
         <div className="py-16 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-8 flex items-center justify-between">
+          <div className="mb-8 flex flex-col md:flex-row gap-4 items-center justify-between">
             <button
               onClick={() => router.push('/news')}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#ffdc36] text-black uppercase text-sm font-semibold tracking-wider hover:bg-[#e6c82f] transition cursor-pointer"
+              className="self-start md:self-auto inline-flex items-center gap-2 px-4 py-2 bg-[#ffdc36] text-black uppercase text-sm font-semibold tracking-wider hover:bg-[#e6c82f] transition cursor-pointer"
             >
               ← Back
             </button>
-            <span className="text-gray-400 text-sm uppercase tracking-wider">{sorted.length} articles</span>
+            <div className="flex items-center gap-4 w-full md:w-auto">
+              <span className="text-gray-400 text-sm uppercase tracking-wider whitespace-nowrap hidden sm:inline">
+                {filtered.length} articles
+              </span>
+              <div className="relative w-full md:w-80">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                <input
+                  type="text"
+                  placeholder="Search articles..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-white text-black border-2 border-transparent focus:border-[#ffdc36] focus:outline-none transition-colors placeholder:text-gray-500"
+                />
+              </div>
+            </div>
           </div>
 
           {loading ? (
-            <div className="text-gray-300">Loading…</div>
-          ) : sorted.length === 0 ? (
-            <div className="text-gray-300">No articles found.</div>
+            <div className="flex justify-center py-20">
+              <Loader2 className="animate-spin text-[#ffdc36]" size={48} />
+            </div>
+          ) : error ? (
+            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+              <AlertCircle size={48} className="mb-4 text-red-500" />
+              <p>{error}</p>
+            </div>
+          ) : filtered.length === 0 ? (
+            <div className="py-12 text-gray-500 text-lg">No articles found matching your search.</div>
           ) : (
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {sorted.map((a) => {
+              {filtered.map((a) => {
                 const { day, month } = formatDayMonth(a.published_at);
                 return (
                   <div key={String(a.id)} className="group relative">
