@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { LogOut, UserCog, Users, Newspaper, Calendar, ShoppingBag, Loader2, Save, Camera } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
@@ -17,6 +18,15 @@ interface CommitteeMember {
   name: string;
   bio: string;
   photoUrl: string;
+}
+
+interface CommitteeMemberResponse {
+  id: number;
+  role: string;
+  name: string;
+  bio: string;
+  image_url: string;
+  email: string;
 }
 
 type TabType = "committee" | "users" | "news" | "events" | "merch";
@@ -64,10 +74,19 @@ export default function AdminDashboard() {
         headers: { Authorization: `Bearer ${jwt}` },
       });
       if (!res.ok) throw new Error("Failed to fetch committee");
-      // Handle empty/204 responses safely
-      const hasBody = (res.headers.get("content-length") ?? "0") !== "0";
-      const data: CommitteeMember[] = hasBody ? await res.json() : [];
-      setCommittee(data); // autofills UI with existing members
+
+      const text = await res.text();
+      const raw = text ? JSON.parse(text) : [];
+      const data = Array.isArray(raw)
+        ? raw.map((m: CommitteeMemberResponse) => ({
+            id: String(m.id),
+            role: m.role,
+            name: m.name,
+            bio: m.bio,
+            photoUrl: m.image_url,
+          }))
+        : [];
+      setCommittee(data);
     } catch (err) {
       setError("Could not load committee");
       console.error(err);
@@ -133,43 +152,49 @@ export default function AdminDashboard() {
     }
   };
 
-  const tabs: { id: TabType; label: string }[] = [
-    { id: "committee", label: "Committee" },
-    { id: "users", label: "Users" },
-    { id: "news", label: "News" },
-    { id: "events", label: "Events" },
-    { id: "merch", label: "Merch" },
-  ];
+  const tabs = [
+    { id: "committee", label: "Committee", icon: UserCog },
+    { id: "users", label: "Users", icon: Users },
+    { id: "news", label: "News", icon: Newspaper },
+    { id: "events", label: "Events", icon: Calendar },
+    { id: "merch", label: "Merch", icon: ShoppingBag },
+  ] as const;
 
   if (loading)
-    return <p className="text-white text-center pt-24">Loading...</p>;
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#ffdc36]" />
+      </div>
+    );
 
   return (
-    <div className="min-h-screen bg-black text-white pt-30 px-4">
+    <div className="min-h-screen bg-black text-white pt-24 px-4 pb-12">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-4xl font-bold text-[#ffdc36]">Admin Dashboard</h1>
+          <h1 className="text-3xl md:text-4xl font-bold text-[#ffdc36]">Admin Dashboard</h1>
           <button
             onClick={logout}
-            className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-md transition"
+            className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition shadow-sm"
           >
-            Logout
+            <LogOut size={18} />
+            <span>Logout</span>
           </button>
         </div>
 
         {error && <p className="text-red-400 mb-4">{error}</p>}
 
-        <div className="flex gap-2 mb-6 border-b border-[#ffdc36]">
+        <div className="flex flex-wrap gap-2 mb-8">
           {tabs.map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-3 font-semibold transition ${
+              onClick={() => setActiveTab(tab.id as TabType)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                 activeTab === tab.id
-                  ? "text-[#ffdc36] border-b-2 border-[#ffdc36]"
-                  : "text-gray-400 hover:text-white"
+                  ? "bg-[#ffdc36] text-black shadow-md transform scale-105"
+                  : "bg-[#1a1a1a] text-gray-400 hover:text-white hover:bg-[#2a2a2a]"
               }`}
             >
+              <tab.icon size={18} />
               {tab.label}
             </button>
           ))}
@@ -178,35 +203,77 @@ export default function AdminDashboard() {
         <div className="bg-[#0f0f0f] border border-[#ffdc36] rounded-lg p-6">
           {activeTab === "committee" && (
             <div>
-              <h2 className="text-2xl font-semibold mb-4">Committee</h2>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold">Manage Committee</h2>
+                {committee.length > 0 && (
+                  <button
+                    onClick={saveCommittee}
+                    disabled={savingCommittee}
+                    className="flex items-center gap-2 bg-[#ffdc36] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#e6c229] transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-yellow-900/20"
+                  >
+                    {savingCommittee ? (
+                      <Loader2 className="animate-spin" size={18} />
+                    ) : (
+                      <Save size={18} />
+                    )}
+                    <span>{savingCommittee ? "Saving..." : "Save Changes"}</span>
+                  </button>
+                )}
+              </div>
               {committee.length === 0 ? (
                 <p className="text-gray-400">No committee data found</p>
               ) : (
-                <div className="space-y-6">
+                <div className="grid grid-cols-1 gap-6">
                   {committee.map((member) => (
                     <div
                       key={member.id}
-                      className="grid grid-cols-1 md:grid-cols-3 gap-4 items-start border border-gray-700 p-4 rounded"
+                      className="bg-white/5 border border-gray-800 rounded-xl flex flex-col md:flex-row-reverse overflow-hidden hover:border-gray-600 transition-colors"
                     >
-                      <div className="md:col-span-2 space-y-4">
-                        <div>
-                          <label className="block text-sm mb-1">Role</label>
+                      {/* Photo Section */}
+                      <div className="flex-shrink-0 w-full md:w-84 h-72 md:h-86 relative border-b md:border-b-0 border-gray-800 overflow-hidden">
+                        <label className="block w-full h-full cursor-pointer group bg-gray-900">
+                          {member.photoUrl ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={member.photoUrl}
+                              alt={`${member.role} - ${member.name}`}
+                              className="w-full h-full object-cover transition-transform duration-300 "
+                            />
+                          ) : (
+                            <div className="w-full h-full flex flex-col items-center justify-center text-gray-500 gap-2">
+                              <Camera size={24} />
+                              <span className="text-xs font-medium uppercase">Upload</span>
+                            </div>
+                          )}
+                          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 border-4 border-dashed border-[#ffdc36] rounded-r-xl">
+                            <Camera className="text-[#ffdc36] mb-1" size={24} />
+                            <span className="text-[10px] text-white font-bold uppercase tracking-wider">Change Photo</span>
+                          </div>
                           <input
-                            id={`member-role-${member.id}`}
-                            type="text"
-                            value={member.role}
-                            readOnly
-                            aria-readonly="true"
-                            title={`Role: ${member.role}`}
-                            placeholder={member.role}
-                            aria-label={`Role: ${member.role}`}
-                            className="w-full px-4 py-2 rounded-md bg-gray-800 border border-gray-700 text-gray-300"
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={(e) =>
+                              handlePhotoSelect(
+                                member.id,
+                                e.target.files?.[0] ?? null
+                              )
+                            }
                           />
+                        </label>
+                      </div>
+
+                      <div className="flex-grow p-6 space-y-4 md:border-r border-gray-800">
+                        <div>
+                          <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">Role</label>
+                          <div className="w-full px-4 py-2.5 rounded-lg bg-gray-900/50 border border-gray-800 text-gray-400 font-medium">
+                            {member.role}
+                          </div>
                         </div>
                         <div>
                           <label
                             htmlFor={`member-name-${member.id}`}
-                            className="block text-sm mb-1"
+                            className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
                           >
                             Name
                           </label>
@@ -217,14 +284,14 @@ export default function AdminDashboard() {
                             onChange={(e) =>
                               updateMember(member.id, { name: e.target.value })
                             }
-                            placeholder="Enter committee member name"
-                            className="w-full px-4 py-2 rounded-md bg-gray-900 border border-gray-700 text-white focus:border-[#ffdc36] focus:outline-none"
+                            placeholder="Name"
+                            className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none transition-all placeholder-gray-700"
                           />
                         </div>
                         <div>
                           <label
                             htmlFor={`member-bio-${member.id}`}
-                            className="block text-sm mb-1"
+                            className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5"
                           >
                             Bio
                           </label>
@@ -234,51 +301,14 @@ export default function AdminDashboard() {
                             onChange={(e) =>
                               updateMember(member.id, { bio: e.target.value })
                             }
-                            placeholder="Enter committee member bio"
+                            placeholder="Enter bio..."
                             rows={3}
-                            className="w-full px-4 py-2 rounded-md bg-gray-900 border border-gray-700 text-white focus:border-[#ffdc36] focus:outline-none"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-sm mb-1">Photo</label>
-                        <div className="flex items-center gap-3">
-                          {member.photoUrl ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img
-                              src={member.photoUrl}
-                              alt={`${member.role} - ${member.name}`}
-                              className="w-16 h-16 object-cover rounded"
-                            />
-                          ) : (
-                            <div className="w-16 h-16 bg-gray-800 rounded" />
-                          )}
-                          <input
-                            type="file"
-                            accept="image/*"
-                            title={`Upload photo for ${member.role} - ${member.name}`}
-                            aria-label={`Upload photo for ${member.role} - ${member.name}`}
-                            onChange={(e) =>
-                              handlePhotoSelect(
-                                member.id,
-                                e.target.files?.[0] ?? null
-                              )
-                            }
-                            className="text-sm"
+                            className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none transition-all placeholder-gray-700 resize-none"
                           />
                         </div>
                       </div>
                     </div>
                   ))}
-                  <div className="flex justify-end">
-                    <button
-                      onClick={saveCommittee}
-                      disabled={savingCommittee}
-                      className="bg-[#ffdc36] text-black font-semibold px-4 py-2 rounded-md hover:bg-yellow-400 transition disabled:opacity-50"
-                    >
-                      {savingCommittee ? "Saving…" : "Save Changes"}
-                    </button>
-                  </div>
                 </div>
               )}
             </div>
@@ -286,29 +316,37 @@ export default function AdminDashboard() {
 
           {activeTab === "users" && (
             <div>
-              <h2 className="text-2xl font-semibold mb-4">Users</h2>
+              <h2 className="text-2xl font-semibold mb-6">Registered Users</h2>
               {users.length === 0 ? (
-                <p className="text-gray-400">No users found</p>
+                <div className="text-center py-12 bg-gray-900/30 rounded-xl border-2 border-dashed border-gray-800">
+                  <p className="text-gray-400">No users found</p>
+                </div>
               ) : (
-                <table className="w-full">
+                <div className="overflow-hidden rounded-xl border border-gray-800">
+                  <table className="w-full text-left border-collapse">
                   <thead>
-                    <tr className="border-b border-[#ffdc36]">
-                      <th className="text-left py-2">Email</th>
-                      <th className="text-left py-2">Role</th>
+                    <tr className="bg-gray-900 border-b border-gray-800 text-gray-400 text-xs uppercase tracking-wider">
+                      <th className="px-6 py-4 font-semibold">Email</th>
+                      <th className="px-6 py-4 font-semibold">Role</th>
                     </tr>
                   </thead>
-                  <tbody>
+                  <tbody className="divide-y divide-gray-800">
                     {users.map((user) => (
                       <tr
                         key={user.id}
-                        className="border-b border-gray-700 hover:bg-gray-900"
+                        className="hover:bg-gray-900/50 transition-colors"
                       >
-                        <td className="py-3">{user.email}</td>
-                        <td className="py-3">{user.role}</td>
+                        <td className="px-6 py-4 text-gray-300">{user.email}</td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-900/30 text-blue-400 border border-blue-800">
+                            {user.role}
+                          </span>
+                        </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </div>
           )}

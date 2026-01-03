@@ -1,12 +1,14 @@
 package com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.service;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.dto.CommitteeDtos.*;
+
+import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.dto.CommitteeDtos.MemberResponse;
+import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.dto.CommitteeDtos.PhotoResponse;
+import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.dto.CommitteeDtos.UpdateMember;
+import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.dto.CommitteeDtos.UpdateRequest;
 import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.model.CommitteeMember;
 import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.repository.CommitteeRepository;
 
@@ -14,17 +16,11 @@ import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.repository.Com
 public class CommitteeService {
 
     private final CommitteeRepository repo;
-    private final Path mediaDir;
-    private final String mediaBaseUrl;
+    private final StorageService storageService;
 
-    public CommitteeService(
-        CommitteeRepository repo,
-        @Value("${app.media.committee-dir:src/main/resources/static/committee}") String mediaDir,
-        @Value("${app.media.base-url:/committee}") String mediaBaseUrl
-    ) {
+    public CommitteeService(CommitteeRepository repo, StorageService storageService) {
         this.repo = repo;
-        this.mediaDir = Path.of(mediaDir);
-        this.mediaBaseUrl = mediaBaseUrl;
+        this.storageService = storageService;
     }
 
     public List<MemberResponse> listCommittee() {
@@ -43,15 +39,12 @@ public class CommitteeService {
         }
     }
 
-    public PhotoResponse uploadPhoto(Long id, MultipartFile file) throws Exception {
-        Files.createDirectories(mediaDir);
-        String filename = "%d-%s".formatted(id, file.getOriginalFilename());
-        Path target = mediaDir.resolve(filename);
-        file.transferTo(target);
-        String url = mediaBaseUrl.endsWith("/") ? mediaBaseUrl + filename : mediaBaseUrl + "/" + filename;
+    public PhotoResponse uploadPhoto(Long id, MultipartFile file) {
         CommitteeMember m = repo.findById(id).orElseThrow();
-        m.setImageUrl(url);
+        String key = id + "-" + file.getOriginalFilename();
+        String publicUrl = storageService.uploadPublic(key, file);
+        m.setImageUrl(publicUrl);
         repo.save(m);
-        return new PhotoResponse(id, url);
+        return new PhotoResponse(id, publicUrl);
     }
 }
