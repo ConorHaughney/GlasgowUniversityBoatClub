@@ -11,6 +11,7 @@ import {
   ArrowRight,
   Loader2,
   AlertCircle,
+  Newspaper,
 } from "lucide-react";
 
 type EventType = {
@@ -86,6 +87,43 @@ export default function EventsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState("All");
+
+  const [subForm, setSubForm] = useState({ firstName: "", lastName: "", email: "" });
+  const [subStatus, setSubStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [subMsg, setSubMsg] = useState("");
+
+  async function handleSubscribe(e: React.FormEvent) {
+    e.preventDefault();
+    setSubStatus("loading");
+    setSubMsg("");
+
+    const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+
+    try {
+      const res = await fetch(`${API}/api/mailing-list/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(subForm),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Subscription failed");
+      }
+
+      setSubStatus("success");
+      setSubMsg("Thanks for subscribing!");
+      setSubForm({ firstName: "", lastName: "", email: "" });
+    } catch (err: unknown) {
+      console.error(err);
+      setSubStatus("error");
+      if (err instanceof Error) {
+        setSubMsg(err.message || "Something went wrong. Please try again.");
+      } else {
+        setSubMsg("Something went wrong. Please try again.");
+      }
+    }
+  }
 
   useEffect(() => {
     let mounted = true;
@@ -478,37 +516,122 @@ export default function EventsPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="relative py-24 bg-black text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[#ffdc36] transform -skew-y-3 origin-top-right translate-y-1/2 opacity-10"></div>
+      {/* Newsletter CTA */}
+      <section className="relative py-32 bg-grey-1000 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-[#ffdc36] transform skew-y-3 origin-bottom-left opacity-10"></div>
 
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+        <div className="relative max-w-4xl mx-auto px-4 text-center">
           <Calendar size={64} className="text-[#ffdc36] mx-auto mb-8" />
-          <h2 className="text-white uppercase tracking-tight mb-6">
+          <h2 className="text-white uppercase tracking-tight mb-8">
             <span className="block text-4xl sm:text-5xl lg:text-6xl">
-              Never Miss
+              Stay In
             </span>
             <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
-              An Event
+              The Loop
             </span>
           </h2>
-          <p className="text-gray-300 text-xl leading-relaxed mb-10 max-w-2xl mx-auto">
-            Want to receive event updates and race information? Join our mailing
-            list or follow us on social media.
+          <p className="text-gray-300 text-xl leading-relaxed mb-12 max-w-2xl mx-auto">
+            Subscribe to our newsletter for the latest race results, club
+            news, and exclusive updates delivered straight to your inbox.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="#contact"
-              className="bg-[#ffdc36] text-black px-10 py-4 uppercase tracking-wider hover:bg-white transition-colors inline-flex items-center justify-center gap-2 group"
+          <form onSubmit={handleSubscribe} className="max-w-md mx-auto flex flex-col gap-4">
+            <input
+              type="text"
+              placeholder="First Name"
+              value={subForm.firstName}
+              onChange={(e) => setSubForm({ ...subForm, firstName: e.target.value })}
+              required
+              className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+            />
+            <input
+              type="text"
+              placeholder="Last Name"
+              value={subForm.lastName}
+              onChange={(e) => setSubForm({ ...subForm, lastName: e.target.value })}
+              required
+              className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+            />
+            <input
+              type="email"
+              placeholder="Your email address"
+              value={subForm.email}
+              onChange={(e) => setSubForm({ ...subForm, email: e.target.value })}
+              required
+              className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+            />
+            <button
+              type="submit"
+              disabled={subStatus === "loading"}
+              className="bg-[#ffdc36] text-black px-10 py-4 uppercase tracking-wider hover:bg-white transition-colors inline-flex items-center justify-center gap-2 group w-full disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Get Updates
-              <ChevronRight className="group-hover:translate-x-1 transition-transform" />
+              {subStatus === "loading" ? "Subscribing..." : "Subscribe"}
+              <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+            </button>
+            {subMsg && (
+              <p className={`text-sm mt-2 ${subStatus === "success" ? "text-[#ffdc36]" : "text-red-400"}`}>
+                {subMsg}
+              </p>
+            )}
+          </form>
+
+          <div className="mt-12 flex justify-center gap-8">
+            <a
+              href="https://www.instagram.com/glasgowuniversityboatclub"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+              </svg>
             </a>
             <a
-              href="#alumni"
-              className="border-2 border-[#ffdc36] text-[#ffdc36] px-10 py-4 uppercase tracking-wider hover:bg-[#ffdc36] hover:text-black transition-colors inline-flex items-center justify-center gap-2"
+              href="https://www.facebook.com/GlasgowUniversityBoatClub"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
             >
-              View Full Calendar
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+              </svg>
+            </a>
+            <a
+              href="https://x.com/GUBC"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="32"
+                height="32"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
+              </svg>
             </a>
           </div>
         </div>
