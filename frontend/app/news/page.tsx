@@ -289,7 +289,7 @@ export default function NewsPage() {
                 value={subForm.firstName}
                 onChange={(e) => setSubForm({ ...subForm, firstName: e.target.value })}
                 required
-                className="px-6 py-4 bg-white text-black uppercase tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
               />
               <input
                 type="text"
@@ -297,7 +297,7 @@ export default function NewsPage() {
                 value={subForm.lastName}
                 onChange={(e) => setSubForm({ ...subForm, lastName: e.target.value })}
                 required
-                className="px-6 py-4 bg-white text-black uppercase tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
               />
               <input
                 type="email"
@@ -305,7 +305,7 @@ export default function NewsPage() {
                 value={subForm.email}
                 onChange={(e) => setSubForm({ ...subForm, email: e.target.value })}
                 required
-                className="px-6 py-4 bg-white text-black uppercase tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
               />
               <button
                 type="submit"
