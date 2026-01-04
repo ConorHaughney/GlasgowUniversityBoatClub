@@ -41,6 +41,7 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/news/**").permitAll()
                     .requestMatchers("/api/events/**").permitAll()
                     .requestMatchers("/committee/**").permitAll()
+                    .requestMatchers("/api/mailing-list/**").permitAll()
                     .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
@@ -53,7 +54,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://admin.localhost:3000"));
+        configuration.setAllowedOriginPatterns(List.of("*"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(
                 List.of("Authorization", "Content-Type", "Accept", "Origin", "Cache-Control", "Pragma"));

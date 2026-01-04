@@ -84,6 +84,41 @@ export default function NewsPage() {
     }
   }
 
+  const [subForm, setSubForm] = useState({ firstName: "", lastName: "", email: "" });
+  const [subStatus, setSubStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [subMsg, setSubMsg] = useState("");
+
+  async function handleSubscribe(e: React.FormEvent) {
+    e.preventDefault();
+    setSubStatus("loading");
+    setSubMsg("");
+
+    try {
+      const res = await fetch(`${API}/api/mailing-list/subscribe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(subForm),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error(errorText || "Subscription failed");
+      }
+
+      setSubStatus("success");
+      setSubMsg("Thanks for subscribing!");
+      setSubForm({ firstName: "", lastName: "", email: "" });
+    } catch (err: unknown) {
+      console.error(err);
+      setSubStatus("error");
+      if (err instanceof Error) {
+        setSubMsg(err.message || "Something went wrong. Please try again.");
+      } else {
+        setSubMsg("Something went wrong. Please try again.");
+      }
+    }
+  }
+
   return (
     <section id="news" className="bg-gray-1000 mt-20">
       <div className="mx-auto px-6 sm:px-8 lg:px-10">
@@ -247,17 +282,45 @@ export default function NewsPage() {
               Subscribe to our newsletter for the latest race results, club
               news, and exclusive updates delivered straight to your inbox.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <form onSubmit={handleSubscribe} className="max-w-md mx-auto flex flex-col gap-4">
+              <input
+                type="text"
+                placeholder="First Name"
+                value={subForm.firstName}
+                onChange={(e) => setSubForm({ ...subForm, firstName: e.target.value })}
+                required
+                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+              />
+              <input
+                type="text"
+                placeholder="Last Name"
+                value={subForm.lastName}
+                onChange={(e) => setSubForm({ ...subForm, lastName: e.target.value })}
+                required
+                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+              />
               <input
                 type="email"
                 placeholder="Your email address"
-                className="px-6 py-4 bg-white text-black uppercase tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] flex-1 max-w-md"
+                value={subForm.email}
+                onChange={(e) => setSubForm({ ...subForm, email: e.target.value })}
+                required
+                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
               />
-              <button className="bg-[#ffdc36] text-black px-10 py-4 uppercase tracking-wider hover:bg-white transition-colors inline-flex items-center justify-center gap-2 group">
-                Subscribe
+              <button
+                type="submit"
+                disabled={subStatus === "loading"}
+                className="bg-[#ffdc36] text-black px-10 py-4 uppercase tracking-wider hover:bg-white transition-colors inline-flex items-center justify-center gap-2 group w-full disabled:opacity-70 disabled:cursor-not-allowed"
+              >
+                {subStatus === "loading" ? "Subscribing..." : "Subscribe"}
                 <ArrowRight className="group-hover:translate-x-1 transition-transform" />
               </button>
-            </div>
+              {subMsg && (
+                <p className={`text-sm mt-2 ${subStatus === "success" ? "text-[#ffdc36]" : "text-red-400"}`}>
+                  {subMsg}
+                </p>
+              )}
+            </form>
           </div>
         </section>
       </div>
