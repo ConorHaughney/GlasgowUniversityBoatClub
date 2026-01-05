@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LogOut, UserCog, Users, Newspaper, Calendar, ShoppingBag, Loader2, Save, Camera } from "lucide-react";
+import { LogOut, UserCog, Users, Newspaper, Calendar, ShoppingBag, Loader2, Save, Camera, Plus, Trash2, Edit, X, Clock, MapPin } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
@@ -29,6 +29,27 @@ interface CommitteeMemberResponse {
   email: string;
 }
 
+interface EventItem {
+  id: number;
+  title: string;
+  date: string;
+  endDate?: string;
+  location: string;
+  time: string;
+  type: string;
+  description: string;
+  featured: boolean;
+}
+
+interface NewsItem {
+  id: number;
+  title: string;
+  body: string;
+  image_url: string;
+  author: string;
+  published_at: string;
+}
+
 type TabType = "committee" | "users" | "news" | "events" | "merch";
 
 export default function AdminDashboard() {
@@ -41,6 +62,18 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<User[]>([]);
   const [committee, setCommittee] = useState<CommitteeMember[]>([]);
   const [savingCommittee, setSavingCommittee] = useState(false);
+  
+  const [events, setEvents] = useState<EventItem[]>([]);
+  const [isEventModalOpen, setIsEventModalOpen] = useState(false);
+  const [currentEvent, setCurrentEvent] = useState<Partial<EventItem>>({});
+  const [savingEvent, setSavingEvent] = useState(false);
+
+  const [news, setNews] = useState<NewsItem[]>([]);
+  const [isNewsModalOpen, setIsNewsModalOpen] = useState(false);
+  const [currentNews, setCurrentNews] = useState<Partial<NewsItem>>({});
+  const [savingNews, setSavingNews] = useState(false);
+  const [newsImageFile, setNewsImageFile] = useState<File | null>(null);
+
   const photoFilesRef = useRef<Map<string, File>>(new Map()); // key by member.id
 
   useEffect(() => {
@@ -50,7 +83,7 @@ export default function AdminDashboard() {
       return;
     }
     // Autofill from backend
-    Promise.all([fetchUsers(storedToken), fetchCommittee(storedToken)]).finally(
+    Promise.all([fetchUsers(storedToken), fetchCommittee(storedToken), fetchEvents(), fetchNews()]).finally(
       () => setLoading(false)
     );
   }, [router]);
@@ -90,6 +123,31 @@ export default function AdminDashboard() {
     } catch (err) {
       setError("Could not load committee");
       console.error(err);
+    }
+  };
+
+  const fetchEvents = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/events`);
+      if (!res.ok) throw new Error("Failed to fetch events");
+      const data = await res.json();
+      data.sort((a: EventItem, b: EventItem) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      setEvents(data);
+    } catch {
+      console.error("Could not load events");
+    }
+  };
+
+  const fetchNews = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/news`);
+      if (!res.ok) throw new Error("Failed to fetch news");
+      const data = await res.json();
+      const newsData = Array.isArray(data) ? data : [];
+      newsData.sort((a: NewsItem, b: NewsItem) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
+      setNews(newsData);
+    } catch {
+      console.error("Could not load news");
     }
   };
 
@@ -152,6 +210,122 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleSaveEvent = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingEvent(true);
+    const jwt = localStorage.getItem("token");
+    try {
+      const method = currentEvent.id ? "PUT" : "POST";
+      const url = currentEvent.id
+        ? `${API_URL}/api/events/${currentEvent.id}`
+        : `${API_URL}/api/events`;
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+        body: JSON.stringify(currentEvent),
+      });
+
+      if (!res.ok) throw new Error("Failed to save event");
+
+      await fetchEvents();
+      setIsEventModalOpen(false);
+      setCurrentEvent({});
+    } catch (err) {
+      setError("Failed to save event");
+    } finally {
+      setSavingEvent(false);
+    }
+  };
+
+  const handleDeleteEvent = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this event?")) return;
+    const jwt = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${API_URL}/api/events/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${jwt}` },
+      });
+      if (!res.ok) throw new Error("Failed to delete event");
+      setEvents((prev) => prev.filter((e) => e.id !== id));
+    } catch (err) {
+      setError("Failed to delete event");
+    }
+  };
+
+  const handleSaveNews = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingNews(true);
+    const jwt = localStorage.getItem("token");
+    try {
+      let imageUrl = currentNews.image_url;
+
+      if (newsImageFile) {
+        const formData = new FormData();
+        formData.append("file", newsImageFile);
+        const uploadRes = await fetch(`${API_URL}/api/admin/news/image`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${jwt}` },
+          body: formData,
+        });
+        if (!uploadRes.ok) {
+          const errorText = await uploadRes.text();
+          console.error("Image upload failed:", errorText);
+          throw new Error("Failed to upload image: " + errorText);
+        }
+        imageUrl = await uploadRes.text();
+      }
+
+      const method = currentNews.id ? "PUT" : "POST";
+      const url = currentNews.id
+        ? `${API_URL}/api/news/${currentNews.id}`
+        : `${API_URL}/api/news`;
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${jwt}`,
+        },
+        body: JSON.stringify({ ...currentNews, image_url: imageUrl || null }),
+      });
+
+      if (!res.ok) {
+        const errorText = await res.text();
+        console.error(`Failed to save news (${res.status}):`, errorText);
+        throw new Error("Failed to save news");
+      }
+
+      await fetchNews();
+      setIsNewsModalOpen(false);
+      setCurrentNews({});
+      setNewsImageFile(null);
+    } catch (err) {
+      console.error(err);
+      setError("Failed to save news");
+    } finally {
+      setSavingNews(false);
+    }
+  };
+
+  const handleDeleteNews = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this article?")) return;
+    const jwt = localStorage.getItem("token");
+    try {
+      const res = await fetch(`${API_URL}/api/news/${id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${jwt}` },
+      });
+      if (!res.ok) throw new Error("Failed to delete article");
+      setNews((prev) => prev.filter((n) => n.id !== id));
+    } catch (err) {
+      setError("Failed to delete article");
+    }
+  };
+
   const tabs = [
     { id: "committee", label: "Committee", icon: UserCog },
     { id: "users", label: "Users", icon: Users },
@@ -173,40 +347,53 @@ export default function AdminDashboard() {
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl md:text-4xl font-bold text-[#ffdc36]">Admin Dashboard</h1>
           <button
+            type="button"
             onClick={logout}
             className="flex items-center gap-2 bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg transition shadow-sm"
+            aria-label="Log out"
           >
-            <LogOut size={18} />
+            <LogOut size={18} aria-hidden="true" />
             <span>Logout</span>
           </button>
         </div>
 
-        {error && <p className="text-red-400 mb-4">{error}</p>}
+        {error && <p role="alert" className="text-red-400 mb-4">{error}</p>}
 
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex flex-wrap gap-2 mb-8" role="tablist" aria-label="Dashboard sections">
           {tabs.map((tab) => (
             <button
+              type="button"
               key={tab.id}
               onClick={() => setActiveTab(tab.id as TabType)}
+              role="tab"
+              aria-selected={activeTab === tab.id ? "true" : "false"}
+              aria-controls={`panel-${tab.id}`}
+              id={`tab-${tab.id}`}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all ${
                 activeTab === tab.id
                   ? "bg-[#ffdc36] text-black shadow-md transform scale-105"
                   : "bg-[#1a1a1a] text-gray-400 hover:text-white hover:bg-[#2a2a2a]"
               }`}
             >
-              <tab.icon size={18} />
+              <tab.icon size={18} aria-hidden="true" />
               {tab.label}
             </button>
           ))}
         </div>
 
-        <div className="bg-[#0f0f0f] border border-[#ffdc36] rounded-lg p-6">
+        <div 
+          className="bg-[#0f0f0f] border border-[#ffdc36] rounded-lg p-6"
+          role="tabpanel"
+          id={`panel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
+        >
           {activeTab === "committee" && (
             <div>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-semibold">Manage Committee</h2>
                 {committee.length > 0 && (
                   <button
+                    type="button"
                     onClick={saveCommittee}
                     disabled={savingCommittee}
                     className="flex items-center gap-2 bg-[#ffdc36] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#e6c229] transition disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-yellow-900/20"
@@ -231,7 +418,10 @@ export default function AdminDashboard() {
                     >
                       {/* Photo Section */}
                       <div className="flex-shrink-0 w-full md:w-84 h-72 md:h-86 relative border-b md:border-b-0 border-gray-800 overflow-hidden">
-                        <label className="block w-full h-full cursor-pointer group bg-gray-900">
+                        <label 
+                          className="block w-full h-full cursor-pointer group bg-gray-900"
+                          aria-label={`Change photo for ${member.name}`}
+                        >
                           {member.photoUrl ? (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
@@ -353,15 +543,169 @@ export default function AdminDashboard() {
 
           {activeTab === "news" && (
             <div>
-              <h2 className="text-2xl font-semibold mb-4">News</h2>
-              <p className="text-gray-400">News management coming soon...</p>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold">Manage News</h2>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCurrentNews({ published_at: new Date().toISOString().split('T')[0] });
+                    setNewsImageFile(null);
+                    setIsNewsModalOpen(true);
+                  }}
+                  className="flex items-center gap-2 bg-[#ffdc36] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#e6c229] transition shadow-lg shadow-yellow-900/20"
+                >
+                  <Plus size={18} aria-hidden="true" />
+                  <span>Add Article</span>
+                </button>
+              </div>
+
+              {news.length === 0 ? (
+                <p className="text-gray-400">No news articles found</p>
+              ) : (
+                <div className="grid gap-4">
+                  {news.map((item) => (
+                    <div
+                      key={item.id}
+                      className="bg-white/5 border border-gray-800 rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-gray-600 transition-colors"
+                    >
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-xl font-bold text-white line-clamp-1">
+                            {item.title}
+                          </h3>
+                          {item.author && (
+                            <span className="px-2 py-0.5 text-xs uppercase tracking-wider rounded-full border border-gray-600 text-gray-400">
+                              {item.author}
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-gray-400 text-sm flex flex-wrap gap-4 mb-2">
+                          <span className="flex items-center gap-1">
+                            <Calendar size={14} />
+                            {new Date(item.published_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <p className="text-gray-500 text-sm line-clamp-2">
+                          {item.body}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentNews(item);
+                            setNewsImageFile(null);
+                            setIsNewsModalOpen(true);
+                          }}
+                          className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition"
+                          aria-label={`Edit article ${item.title}`}
+                        >
+                          <Edit size={20} aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteNews(item.id)}
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition"
+                          aria-label={`Delete article ${item.title}`}
+                        >
+                          <Trash2 size={20} aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
           {activeTab === "events" && (
             <div>
-              <h2 className="text-2xl font-semibold mb-4">Events</h2>
-              <p className="text-gray-400">Events management coming soon...</p>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-2xl font-semibold">Manage Events</h2>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCurrentEvent({ type: "Competition", featured: false });
+                    setIsEventModalOpen(true);
+                  }}
+                  className="flex items-center gap-2 bg-[#ffdc36] text-black font-bold px-4 py-2 rounded-lg hover:bg-[#e6c229] transition shadow-lg shadow-yellow-900/20"
+                >
+                  <Plus size={18} aria-hidden="true" />
+                  <span>Add Event</span>
+                </button>
+              </div>
+
+              {events.length === 0 ? (
+                <p className="text-gray-400">No events found</p>
+              ) : (
+                <div className="grid gap-4">
+                  {events.map((event) => (
+                    <div
+                      key={event.id}
+                      className="bg-white/5 border border-gray-800 rounded-xl p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-gray-600 transition-colors"
+                    >
+                      <div>
+                        <div className="flex items-center gap-3 mb-2">
+                          <h3 className="text-xl font-bold text-white">
+                            {event.title}
+                          </h3>
+                          <span
+                            className={`px-2 py-0.5 text-xs uppercase tracking-wider rounded-full border ${
+                              event.type === "Competition"
+                                ? "border-[#ffdc36] text-[#ffdc36]"
+                                : event.type === "Social"
+                                ? "border-purple-400 text-purple-400"
+                                : "border-blue-400 text-blue-400"
+                            }`}
+                          >
+                            {event.type}
+                          </span>
+                          {event.featured && (
+                            <span className="px-2 py-0.5 text-xs uppercase tracking-wider rounded-full bg-[#ffdc36] text-black font-bold">
+                              Featured
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-gray-400 text-sm flex flex-wrap gap-4">
+                          <span className="flex items-center gap-1">
+                            <Calendar size={14} />
+                            {event.date} {event.endDate && ` - ${event.endDate}`}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock size={14} />
+                            {event.time}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <MapPin size={14} />
+                            {event.location}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCurrentEvent(event);
+                            setIsEventModalOpen(true);
+                          }}
+                          className="p-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition"
+                          aria-label={`Edit event ${event.title}`}
+                        >
+                          <Edit size={20} aria-hidden="true" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteEvent(event.id)}
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition"
+                          aria-label={`Delete event ${event.title}`}
+                        >
+                          <Trash2 size={20} aria-hidden="true" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -375,6 +719,331 @@ export default function AdminDashboard() {
           )}
         </div>
       </div>
+
+      {isEventModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
+          <div className="bg-[#0f0f0f] border border-gray-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center p-6 border-b border-gray-800 sticky top-0 bg-[#0f0f0f] z-10">
+              <h3 id="modal-title" className="text-xl font-bold text-white">
+                {currentEvent.id ? "Edit Event" : "Add New Event"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsEventModalOpen(false)}
+                className="text-gray-400 hover:text-white transition"
+                aria-label="Close modal"
+              >
+                <X size={24} aria-hidden="true" />
+              </button>
+            </div>
+            <form onSubmit={handleSaveEvent} className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="event-title" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Title
+                  </label>
+                  <input
+                    id="event-title"
+                    type="text"
+                    required
+                    placeholder="Enter event title"
+                    value={currentEvent.title || ""}
+                    onChange={(e) =>
+                      setCurrentEvent({ ...currentEvent, title: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="event-type" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Type
+                  </label>
+                  <select
+                    id="event-type"
+                    value={currentEvent.type || "Competition"}
+                    onChange={(e) =>
+                      setCurrentEvent({ ...currentEvent, type: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none"
+                  >
+                    <option value="Competition">Competition</option>
+                    <option value="Social">Social</option>
+                    <option value="Recruitment">Recruitment</option>
+                  </select>
+                </div>
+                <div>
+                  <label htmlFor="event-start-date" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Start Date
+                  </label>
+                  <input
+                    id="event-start-date"
+                    type="date"
+                    required
+                    value={currentEvent.date || ""}
+                    onChange={(e) =>
+                      setCurrentEvent({ ...currentEvent, date: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="event-end-date" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    End Date (Optional)
+                  </label>
+                  <input
+                    id="event-end-date"
+                    type="date"
+                    value={currentEvent.endDate || ""}
+                    onChange={(e) =>
+                      setCurrentEvent({ ...currentEvent, endDate: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="event-time" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Time
+                  </label>
+                  <input
+                    id="event-time"
+                    type="text"
+                    placeholder="e.g. 09:00 AM"
+                    value={currentEvent.time || ""}
+                    onChange={(e) =>
+                      setCurrentEvent({ ...currentEvent, time: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="event-location" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Location
+                  </label>
+                  <input
+                    id="event-location"
+                    type="text"
+                    required
+                    value={currentEvent.location || ""}
+                    onChange={(e) =>
+                      setCurrentEvent({
+                        ...currentEvent,
+                        location: e.target.value,
+                      })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none"
+                  />
+                </div>
+              </div>
+              <div>
+                <label htmlFor="event-description" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                  Description
+                </label>
+                <textarea
+                  id="event-description"
+                  rows={4}
+                  required
+                  placeholder="Enter event description"
+                  value={currentEvent.description || ""}
+                  onChange={(e) =>
+                    setCurrentEvent({
+                      ...currentEvent,
+                      description: e.target.value,
+                    })
+                  }
+                  className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none resize-none"
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="featured"
+                  checked={currentEvent.featured || false}
+                  onChange={(e) =>
+                    setCurrentEvent({
+                      ...currentEvent,
+                      featured: e.target.checked,
+                    })
+                  }
+                  className="w-5 h-5 rounded border-gray-800 bg-black text-[#ffdc36] focus:ring-[#ffdc36]"
+                  title="Feature this event on the homepage"
+                  aria-label="Feature this event on the homepage"
+                />
+                <label htmlFor="featured" className="text-sm font-medium text-gray-300">
+                  Feature this event on the homepage
+                </label>
+              </div>
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-800">
+                <button
+                  type="button"
+                  onClick={() => setIsEventModalOpen(false)}
+                  className="px-6 py-2 rounded-lg font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingEvent}
+                  className="px-6 py-2 rounded-lg font-bold bg-[#ffdc36] text-black hover:bg-[#e6c229] transition disabled:opacity-50 flex items-center gap-2"
+                >
+                  {savingEvent && <Loader2 className="animate-spin" size={18} />}
+                  {savingEvent ? "Saving..." : "Save Event"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {isNewsModalOpen && (
+        <div 
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="news-modal-title"
+        >
+          <div className="bg-[#0f0f0f] border border-gray-800 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="flex justify-between items-center p-6 border-b border-gray-800 sticky top-0 bg-[#0f0f0f] z-10">
+              <h3 id="news-modal-title" className="text-xl font-bold text-white">
+                {currentNews.id ? "Edit Article" : "Add New Article"}
+              </h3>
+              <button
+                type="button"
+                onClick={() => setIsNewsModalOpen(false)}
+                className="text-gray-400 hover:text-white transition"
+                aria-label="Close modal"
+              >
+                <X size={24} aria-hidden="true" />
+              </button>
+            </div>
+            <form onSubmit={handleSaveNews} className="p-6 space-y-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div>
+                  <label htmlFor="news-title" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Title
+                  </label>
+                  <input
+                    id="news-title"
+                    type="text"
+                    required
+                    placeholder="Enter article title"
+                    value={currentNews.title || ""}
+                    onChange={(e) =>
+                      setCurrentNews({ ...currentNews, title: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none"
+                  />
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="news-author" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                      Author
+                    </label>
+                    <input
+                      id="news-author"
+                      type="text"
+                      required
+                      placeholder="Author name"
+                      value={currentNews.author || ""}
+                      onChange={(e) =>
+                        setCurrentNews({ ...currentNews, author: e.target.value })
+                      }
+                      className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="news-date" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                      Published Date
+                    </label>
+                    <input
+                      id="news-date"
+                      type="date"
+                      required
+                      value={currentNews.published_at ? new Date(currentNews.published_at).toISOString().split('T')[0] : ""}
+                      onChange={(e) =>
+                        setCurrentNews({ ...currentNews, published_at: e.target.value })
+                      }
+                      className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="news-image" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Banner Image
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <div className="relative w-32 h-20 bg-gray-900 rounded-lg overflow-hidden border border-gray-800 group">
+                      {newsImageFile ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={URL.createObjectURL(newsImageFile)}
+                          alt="Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : currentNews.image_url ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={currentNews.image_url}
+                          alt="Current"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-gray-600">
+                          <Camera size={20} />
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      id="news-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => setNewsImageFile(e.target.files?.[0] || null)}
+                      className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#ffdc36] file:text-black hover:file:bg-[#e6c229] transition"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label htmlFor="news-body" className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1.5">
+                    Content
+                  </label>
+                  <textarea
+                    id="news-body"
+                    rows={8}
+                    required
+                    placeholder="Article content..."
+                    value={currentNews.body || ""}
+                    onChange={(e) =>
+                      setCurrentNews({ ...currentNews, body: e.target.value })
+                    }
+                    className="w-full px-4 py-2.5 rounded-lg bg-black border border-gray-800 text-white focus:border-[#ffdc36] focus:ring-1 focus:ring-[#ffdc36] outline-none resize-none"
+                  />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 pt-4 border-t border-gray-800">
+                <button
+                  type="button"
+                  onClick={() => setIsNewsModalOpen(false)}
+                  className="px-6 py-2 rounded-lg font-medium text-gray-400 hover:text-white hover:bg-gray-800 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingNews}
+                  className="px-6 py-2 rounded-lg font-bold bg-[#ffdc36] text-black hover:bg-[#e6c229] transition disabled:opacity-50 flex items-center gap-2"
+                >
+                  {savingNews && <Loader2 className="animate-spin" size={18} />}
+                  {savingNews ? "Saving..." : "Save Article"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

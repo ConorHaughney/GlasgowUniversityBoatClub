@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,7 +25,6 @@ import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.repository.Use
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Bean
@@ -38,8 +37,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/auth/**").permitAll()
                     .requestMatchers("/api/committee").permitAll()
-                    .requestMatchers("/api/news/**").permitAll()
-                    .requestMatchers("/api/events/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/news", "/api/news/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/**").permitAll()
                     .requestMatchers("/committee/**").permitAll()
                     .requestMatchers("/api/mailing-list/**").permitAll()
                     .anyRequest().authenticated())

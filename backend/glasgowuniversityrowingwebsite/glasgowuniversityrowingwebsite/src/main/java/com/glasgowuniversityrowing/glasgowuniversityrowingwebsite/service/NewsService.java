@@ -34,8 +34,24 @@ public class NewsService {
     }
 
     public NewsResponse create(CreateNewsRequest req) {
-        LocalDateTime now = LocalDateTime.now();
-        News n = new News(req.title(), req.body(), req.image_url(), req.author(), now);
+        LocalDateTime date = req.published_at() != null ? req.published_at().atStartOfDay() : LocalDateTime.now();
+        News n = new News(req.title(), req.body(), req.image_url(), req.author(), date);
+        News saved = repo.save(n);
+        return new NewsResponse(saved.getId(), saved.getTitle(), saved.getContent(), saved.getImageUrl(), saved.getAuthor(), saved.getCreatedAt());
+    }
+
+    public NewsResponse update(Long id, CreateNewsRequest req) {
+        News n = repo.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "News not found"));
+        
+        n.setTitle(req.title());
+        n.setContent(req.body());
+        n.setImageUrl(req.image_url());
+        n.setAuthor(req.author());
+        if (req.published_at() != null) {
+            n.setCreatedAt(req.published_at().atStartOfDay());
+        }
+        
         News saved = repo.save(n);
         return new NewsResponse(saved.getId(), saved.getTitle(), saved.getContent(), saved.getImageUrl(), saved.getAuthor(), saved.getCreatedAt());
     }

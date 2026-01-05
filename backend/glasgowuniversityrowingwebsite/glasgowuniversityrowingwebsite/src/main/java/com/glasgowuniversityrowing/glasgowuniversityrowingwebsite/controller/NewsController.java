@@ -29,14 +29,21 @@ public class NewsController {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PostMapping("/admin/news")
+    @PostMapping("/news")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<NewsResponse> create(@RequestBody CreateNewsRequest req) {
         NewsResponse created = service.create(req);
         return ResponseEntity.status(201).body(created);
     }
 
-    @DeleteMapping("/admin/news/{id}")
+    @PutMapping("/news/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<NewsResponse> update(@PathVariable Long id, @RequestBody CreateNewsRequest req) {
+        NewsResponse updated = service.update(id, req);
+        return ResponseEntity.ok(updated);
+    }
+
+    @DeleteMapping("/news/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
