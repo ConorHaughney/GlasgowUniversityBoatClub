@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.dto.NewsDto.*;
 import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.service.NewsService;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/api")
 public class NewsController {
@@ -31,14 +33,14 @@ public class NewsController {
 
     @PostMapping("/news")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<NewsResponse> create(@RequestBody CreateNewsRequest req) {
+    public ResponseEntity<NewsResponse> create(@Valid @RequestBody CreateNewsRequest req) {
         NewsResponse created = service.create(req);
         return ResponseEntity.status(201).body(created);
     }
 
     @PutMapping("/news/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<NewsResponse> update(@PathVariable Long id, @RequestBody CreateNewsRequest req) {
+    public ResponseEntity<NewsResponse> update(@PathVariable Long id, @Valid @RequestBody CreateNewsRequest req) {
         NewsResponse updated = service.update(id, req);
         return ResponseEntity.ok(updated);
     }
