@@ -7,384 +7,384 @@ import { ArrowRight, Newspaper, Loader2, AlertCircle } from "lucide-react";
 import { ImageWithFallback } from "@/components/Fallback";
 
 type ApiArticle = {
-  id: number | string;
-  title: string;
-  body?: string;
-  image_url?: string;
-  author?: string;
-  published_at?: string;
+    id: number | string;
+    title: string;
+    body?: string;
+    image_url?: string;
+    author?: string;
+    published_at?: string;
 };
 
 function excerpt(text?: string, len = 120) {
-  if (!text) return "";
-  const plain = text.replace(/<[^>]*>/g, "").trim();
-  if (plain.length <= len) return plain;
-  return plain.slice(0, len).replace(/\s+\S*$/, "") + "…";
+    if (!text) return "";
+    const plain = text.replace(/<[^>]*>/g, "").trim();
+    if (plain.length <= len) return plain;
+    return plain.slice(0, len).replace(/\s+\S*$/, "") + "…";
 }
 
 function formatDayMonth(iso?: string) {
-  if (!iso) return { day: "", month: "" };
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return { day: "", month: "" };
-  return {
-    day: String(d.getDate()).padStart(2, "0"),
-    month: d.toLocaleString(undefined, { month: "short" }),
-  };
+    if (!iso) return { day: "", month: "" };
+    const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) return { day: "", month: "" };
+    return {
+        day: String(d.getDate()).padStart(2, "0"),
+        month: d.toLocaleString(undefined, { month: "short" }),
+    };
 }
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
 export default function NewsPage() {
-  const router = useRouter();
-  const [articles, setArticles] = useState<ApiArticle[] | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+    const router = useRouter();
+    const [articles, setArticles] = useState<ApiArticle[] | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const res = await fetch(`${API}/api/news`);
-        if (!res.ok) throw new Error("Fetch failed");
-        const json = await res.json();
-        if (!mounted) return;
-        setArticles(Array.isArray(json) ? json : []);
-      } catch (err) {
-        console.error("News load error:", err);
-        if (mounted) setError("Failed to load news. Please try again later.");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const res = await fetch(`${API}/api/news`);
+                if (!res.ok) throw new Error("Fetch failed");
+                const json = await res.json();
+                if (!mounted) return;
+                setArticles(Array.isArray(json) ? json : []);
+            } catch (err) {
+                console.error("News load error:", err);
+                if (mounted) setError("Failed to load news. Please try again later.");
+            } finally {
+                if (mounted) setLoading(false);
+            }
+        })();
+        return () => {
+            mounted = false;
+        };
+    }, []);
 
-  const recent = (articles ?? []).slice().sort((a, b) => {
-    if (a.published_at && b.published_at)
-      return +new Date(b.published_at) - +new Date(a.published_at);
-    const ai = Number(a.id);
-    const bi = Number(b.id);
-    if (!Number.isNaN(ai) && !Number.isNaN(bi)) return bi - ai;
-    return 0;
-  });
+    const recent = (articles ?? []).slice().sort((a, b) => {
+        if (a.published_at && b.published_at)
+            return +new Date(b.published_at) - +new Date(a.published_at);
+        const ai = Number(a.id);
+        const bi = Number(b.id);
+        if (!Number.isNaN(ai) && !Number.isNaN(bi)) return bi - ai;
+        return 0;
+    });
 
-  const [visibleCount, setVisibleCount] = useState(4);
-  const [stage, setStage] = useState<0 | 1>(0); // 0 = initial, 1 = showed more (button becomes "See all" and navigates)
+    const [visibleCount, setVisibleCount] = useState(4);
+    const [stage, setStage] = useState<0 | 1>(0); // 0 = initial, 1 = showed more (button becomes "See all" and navigates)
 
-  const visibleRecent = recent.slice(0, visibleCount);
+    const visibleRecent = recent.slice(0, visibleCount);
 
-  function handleSeeButton() {
-    if (stage === 0) {
-      setVisibleCount((v) => Math.min(v + 4, recent.length));
-      setStage(1);
-    } else {
-      router.push("/news/all");
+    function handleSeeButton() {
+        if (stage === 0) {
+            setVisibleCount((v) => Math.min(v + 4, recent.length));
+            setStage(1);
+        } else {
+            router.push("/news/all");
+        }
     }
-  }
 
-  const [subForm, setSubForm] = useState({ firstName: "", lastName: "", email: "" });
-  const [subStatus, setSubStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
-  const [subMsg, setSubMsg] = useState("");
+    const [subForm, setSubForm] = useState({ firstName: "", lastName: "", email: "" });
+    const [subStatus, setSubStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+    const [subMsg, setSubMsg] = useState("");
 
-  async function handleSubscribe(e: React.FormEvent) {
-    e.preventDefault();
-    setSubStatus("loading");
-    setSubMsg("");
+    async function handleSubscribe(e: React.FormEvent) {
+        e.preventDefault();
+        setSubStatus("loading");
+        setSubMsg("");
 
-    try {
-      const res = await fetch(`${API}/api/mailing-list/subscribe`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(subForm),
-      });
+        try {
+            const res = await fetch(`${API}/api/mailing-list/subscribe`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(subForm),
+            });
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error(errorText || "Subscription failed");
-      }
+            if (!res.ok) {
+                const errorText = await res.text();
+                throw new Error(errorText || "Subscription failed");
+            }
 
-      setSubStatus("success");
-      setSubMsg("Thanks for subscribing!");
-      setSubForm({ firstName: "", lastName: "", email: "" });
-    } catch (err: unknown) {
-      console.error(err);
-      setSubStatus("error");
-      if (err instanceof Error) {
-        setSubMsg(err.message || "Something went wrong. Please try again.");
-      } else {
-        setSubMsg("Something went wrong. Please try again.");
-      }
+            setSubStatus("success");
+            setSubMsg("Thanks for subscribing!");
+            setSubForm({ firstName: "", lastName: "", email: "" });
+        } catch (err: unknown) {
+            console.error(err);
+            setSubStatus("error");
+            if (err instanceof Error) {
+                setSubMsg(err.message || "Something went wrong. Please try again.");
+            } else {
+                setSubMsg("Something went wrong. Please try again.");
+            }
+        }
     }
-  }
 
-  return (
-    <section id="news" className="bg-gray-1000 mt-20">
-      <div className="mx-auto px-6 sm:px-8 lg:px-10">
-        {/* Hero Section */}
-        <section className="relative py-24 bg-black text-white overflow-hidden">
-          <div className="absolute top-5 right-5 text-white/5 text-[15rem] uppercase tracking-tight leading-none pointer-events-none">
-            News
-          </div>
+    return (
+        <section id="news" className="bg-gray-1000 mt-20">
+            <div className="mx-auto px-6 sm:px-8 lg:px-10">
+                {/* Hero Section */}
+                <section className="relative py-24 bg-black text-white overflow-hidden">
+                    <div className="absolute top-5 right-5 text-white/5 text-[15rem] uppercase tracking-tight leading-none pointer-events-none">
+                        News
+                    </div>
 
-          <div className="absolute bottom-0 left-0 w-1/3 h-full bg-[#ffdc36] transform origin-bottom-left skew-x-6 -translate-x-1/3 opacity-20"></div>
+                    <div className="absolute bottom-0 left-0 w-1/3 h-full bg-[#ffdc36] transform origin-bottom-left skew-x-6 -translate-x-1/3 opacity-20"></div>
 
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
-            <h1 className="text-white uppercase tracking-tight mb-6">
-              <span className="block text-5xl sm:text-6xl lg:text-7xl">
-                Latest
-              </span>
-              <span className="block text-5xl sm:text-6xl lg:text-7xl text-[#ffdc36]">
-                News
-              </span>
-            </h1>
-            <p className="text-gray-300 text-xl max-w-3xl">
-              Stay updated with the latest news from Glasgow University Boat
-              Club.
-            </p>
-          </div>
-        </section>
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                        <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
+                        <h1 className="text-white uppercase tracking-tight mb-6">
+                            <span className="block text-5xl sm:text-6xl lg:text-7xl">
+                                Latest
+                            </span>
+                            <span className="block text-5xl sm:text-6xl lg:text-7xl text-[#ffdc36]">
+                                News
+                            </span>
+                        </h1>
+                        <p className="text-gray-300 text-xl max-w-3xl">
+                            Stay updated with the latest news from Glasgow University Boat
+                            Club.
+                        </p>
+                    </div>
+                </section>
 
-        {/* Recent News Grid */}
-        <section className="py-24 bg-gray-1000">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="mb-16">
-              <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
-              <h2 className="text-white uppercase tracking-tight">
-                <span className="block text-4xl sm:text-5xl lg:text-6xl">
-                  Recent
-                </span>
-                <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
-                  Updates
-                </span>
-              </h2>
-            </div>
-
-            {loading ? (
-              <div className="flex justify-center py-20">
-                <Loader2 className="animate-spin text-[#ffdc36]" size={48} />
-              </div>
-            ) : error ? (
-              <div className="flex flex-col items-center justify-center py-20 text-gray-400">
-                <AlertCircle size={48} className="mb-4 text-red-500" />
-                <p>{error}</p>
-              </div>
-            ) : visibleRecent.length === 0 ? (
-              <div className="py-12 text-gray-500 text-lg">
-                No recent articles found.
-              </div>
-            ) : (
-              <>
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-                  {visibleRecent.map((item) => {
-                    const { day, month } = formatDayMonth(item.published_at);
-                    return (
-                      <div key={String(item.id)} className="group relative">
-                        <div className="absolute -top-4 -right-4 w-full h-full border-2 border-[#ffdc36] -z-10"></div>
-
-                        <div className="bg-white overflow-hidden h-full flex flex-col">
-                          <div className="relative overflow-hidden h-44">
-                            {item.image_url && (
-                              <ImageWithFallback
-                                src={item.image_url}
-                                alt={item.title}
-                                fill
-                                className="object-cover transition-all duration-500"
-                              />
-                            )}
-                            <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-transparent" />
-                            <div className="absolute bottom-3 left-3 bg-[#ffdc36] text-black px-3 py-1 flex items-center gap-3">
-                              <div className="text-center">
-                                <div className="text-lg uppercase tracking-tight leading-none">
-                                  {day}
-                                </div>
-                                <div className="text-xs uppercase tracking-wider">
-                                  {month}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="p-6 flex-1 flex flex-col border-l-4 border-[#ffdc36]">
-                            <h3 className="text-black uppercase tracking-wide text-lg mb-2 leading-tight group-hover:text-[#ffdc36] transition-colors">
-                              <Link href={`/news/${item.id}`}>
-                                {item.title}
-                              </Link>
-                            </h3>
-                            <p className="text-gray-700 leading-relaxed mb-4 flex-1">
-                              {excerpt(item.body, 100)}
-                            </p>
-                            <div className="flex items-center gap-2 text-black group-hover:text-[#ffdc36] uppercase text-xs tracking-wider transition-colors">
-                              <Link
-                                href={`/news/${item.id}`}
-                                className="inline-flex items-center gap-2"
-                              >
-                                <span>Read More</span>
-                                <ArrowRight
-                                  size={16}
-                                  className="group-hover:translate-x-1 transition-transform"
-                                />
-                              </Link>
-                            </div>
-                          </div>
+                {/* Recent News Grid */}
+                <section className="py-24 bg-gray-1000">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="mb-16">
+                            <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
+                            <h2 className="text-white uppercase tracking-tight">
+                                <span className="block text-4xl sm:text-5xl lg:text-6xl">
+                                    Recent
+                                </span>
+                                <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
+                                    Updates
+                                </span>
+                            </h2>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
 
-                {/* See more / See all button */}
-                {recent.length > visibleCount && (
-                  <div className="mt-10 flex flex-col items-center">
-                    <button
-                      onClick={handleSeeButton}
-                      className="px-8 py-3 bg-[#ffdc36] text-black uppercase text-sm font-semibold tracking-wider hover:bg-[#e6c82f] transition-colors cursor-pointer"
-                    >
-                      {stage === 0 ? "See more" : "See all"}
-                    </button>
+                        {loading ? (
+                            <div className="flex justify-center py-20">
+                                <Loader2 className="animate-spin text-[#ffdc36]" size={48} />
+                            </div>
+                        ) : error ? (
+                            <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+                                <AlertCircle size={48} className="mb-4 text-red-500" />
+                                <p>{error}</p>
+                            </div>
+                        ) : visibleRecent.length === 0 ? (
+                            <div className="py-12 text-gray-500 text-lg">
+                                No recent articles found.
+                            </div>
+                        ) : (
+                            <>
+                                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                                    {visibleRecent.map((item) => {
+                                        const { day, month } = formatDayMonth(item.published_at);
+                                        return (
+                                            <div key={String(item.id)} className="group relative">
+                                                <div className="absolute -top-4 -right-4 w-full h-full border-2 border-[#ffdc36] -z-10"></div>
 
-                    {stage === 1 && visibleCount > 4 && (
-                      <button
-                        onClick={() => {
-                          setVisibleCount(4);
-                          setStage(0);
-                        }}
-                        className="mt-2 text-sm text-gray-300 hover:underline cursor-pointer"
-                        aria-label="Show fewer articles"
-                      >
-                        Show less
-                      </button>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </section>
+                                                <div className="bg-white overflow-hidden h-full flex flex-col">
+                                                    <div className="relative overflow-hidden h-44">
+                                                        {item.image_url && (
+                                                            <ImageWithFallback
+                                                                src={item.image_url}
+                                                                alt={item.title}
+                                                                fill
+                                                                className="object-cover transition-all duration-500"
+                                                            />
+                                                        )}
+                                                        <div className="absolute inset-0 bg-gradient-to-br from-black/40 to-transparent" />
+                                                        <div className="absolute bottom-3 left-3 bg-[#ffdc36] text-black px-3 py-1 flex items-center gap-3">
+                                                            <div className="text-center">
+                                                                <div className="text-lg uppercase tracking-tight leading-none">
+                                                                    {day}
+                                                                </div>
+                                                                <div className="text-xs uppercase tracking-wider">
+                                                                    {month}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
 
-        {/* Newsletter CTA */}
-        <section className="relative py-32 bg-grey-1000 text-white overflow-hidden">
-          <div className="absolute inset-0 bg-[#ffdc36] transform skew-y-3 origin-bottom-left opacity-10"></div>
+                                                    <div className="p-6 flex-1 flex flex-col border-l-4 border-[#ffdc36]">
+                                                        <h3 className="text-black uppercase tracking-wide text-lg mb-2 leading-tight group-hover:text-[#ffdc36] transition-colors">
+                                                            <Link href={`/news/${item.id}`}>
+                                                                {item.title}
+                                                            </Link>
+                                                        </h3>
+                                                        <p className="text-gray-700 leading-relaxed mb-4 flex-1">
+                                                            {excerpt(item.body, 100)}
+                                                        </p>
+                                                        <div className="flex items-center gap-2 text-black group-hover:text-[#ffdc36] uppercase text-xs tracking-wider transition-colors">
+                                                            <Link
+                                                                href={`/news/${item.id}`}
+                                                                className="inline-flex items-center gap-2"
+                                                            >
+                                                                <span>Read More</span>
+                                                                <ArrowRight
+                                                                    size={16}
+                                                                    className="group-hover:translate-x-1 transition-transform"
+                                                                />
+                                                            </Link>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
 
-          <div className="relative max-w-4xl mx-auto px-4 text-center">
-            <Newspaper size={64} className="text-[#ffdc36] mx-auto mb-8" />
-            <h2 className="text-white uppercase tracking-tight mb-8">
-              <span className="block text-4xl sm:text-5xl lg:text-6xl">
-                Stay In
-              </span>
-              <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
-                The Loop
-              </span>
-            </h2>
-            <p className="text-gray-300 text-xl leading-relaxed mb-12 max-w-2xl mx-auto">
-              Subscribe to our newsletter for the latest race results, club
-              news, and exclusive updates delivered straight to your inbox.
-            </p>
-            <form onSubmit={handleSubscribe} className="max-w-md mx-auto flex flex-col gap-4">
-              <input
-                type="text"
-                placeholder="First Name"
-                value={subForm.firstName}
-                onChange={(e) => setSubForm({ ...subForm, firstName: e.target.value })}
-                required
-                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
-              />
-              <input
-                type="text"
-                placeholder="Last Name"
-                value={subForm.lastName}
-                onChange={(e) => setSubForm({ ...subForm, lastName: e.target.value })}
-                required
-                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
-              />
-              <input
-                type="email"
-                placeholder="Your email address"
-                value={subForm.email}
-                onChange={(e) => setSubForm({ ...subForm, email: e.target.value })}
-                required
-                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
-              />
-              <button
-                type="submit"
-                disabled={subStatus === "loading"}
-                className="bg-[#ffdc36] text-black px-10 py-4 uppercase tracking-wider hover:bg-white transition-colors inline-flex items-center justify-center gap-2 group w-full disabled:opacity-70 disabled:cursor-not-allowed"
-              >
-                {subStatus === "loading" ? "Subscribing..." : "Subscribe"}
-                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
-              </button>
-              {subMsg && (
-                <p className={`text-sm mt-2 ${subStatus === "success" ? "text-[#ffdc36]" : "text-red-400"}`}>
-                  {subMsg}
-                </p>
-              )}
-            </form>
+                                {/* See more / See all button */}
+                                {recent.length > visibleCount && (
+                                    <div className="mt-10 flex flex-col items-center">
+                                        <button
+                                            onClick={handleSeeButton}
+                                            className="px-8 py-3 bg-[#ffdc36] text-black uppercase text-sm font-semibold tracking-wider hover:bg-[#e6c82f] transition-colors cursor-pointer"
+                                        >
+                                            {stage === 0 ? "See more" : "See all"}
+                                        </button>
 
-            <div className="mt-12 flex justify-center gap-8">
-              <a
-                href="https://www.instagram.com/glasgowuniversityboatclub"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                </svg>
-              </a>
-              <a
-                href="https://www.facebook.com/GlasgowUniversityBoatClub"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                </svg>
-              </a>
-              <a
-              href="https://x.com/GUBC"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="32"
-                  height="32"
-                  viewBox="0 0 24 24"
-                fill="currentColor"
-                >
-                <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
-                </svg>
-              </a>
+                                        {stage === 1 && visibleCount > 4 && (
+                                            <button
+                                                onClick={() => {
+                                                    setVisibleCount(4);
+                                                    setStage(0);
+                                                }}
+                                                className="mt-2 text-sm text-gray-300 hover:underline cursor-pointer"
+                                                aria-label="Show fewer articles"
+                                            >
+                                                Show less
+                                            </button>
+                                        )}
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </section>
+
+                {/* Newsletter CTA */}
+                <section className="relative py-32 bg-grey-1000 text-white overflow-hidden">
+                    <div className="absolute inset-0 bg-[#ffdc36] transform skew-y-3 origin-bottom-left opacity-10"></div>
+
+                    <div className="relative max-w-4xl mx-auto px-4 text-center">
+                        <Newspaper size={64} className="text-[#ffdc36] mx-auto mb-8" />
+                        <h2 className="text-white uppercase tracking-tight mb-8">
+                            <span className="block text-4xl sm:text-5xl lg:text-6xl">
+                                Stay In
+                            </span>
+                            <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
+                                The Loop
+                            </span>
+                        </h2>
+                        <p className="text-gray-300 text-xl leading-relaxed mb-12 max-w-2xl mx-auto">
+                            Subscribe to our newsletter for the latest race results, club
+                            news, and exclusive updates delivered straight to your inbox.
+                        </p>
+                        <form onSubmit={handleSubscribe} className="max-w-md mx-auto flex flex-col gap-4">
+                            <input
+                                type="text"
+                                placeholder="First Name"
+                                value={subForm.firstName}
+                                onChange={(e) => setSubForm({ ...subForm, firstName: e.target.value })}
+                                required
+                                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+                            />
+                            <input
+                                type="text"
+                                placeholder="Last Name"
+                                value={subForm.lastName}
+                                onChange={(e) => setSubForm({ ...subForm, lastName: e.target.value })}
+                                required
+                                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+                            />
+                            <input
+                                type="email"
+                                placeholder="Your email address"
+                                value={subForm.email}
+                                onChange={(e) => setSubForm({ ...subForm, email: e.target.value })}
+                                required
+                                className="px-6 py-4 bg-white text-black tracking-wider placeholder:text-gray-400 placeholder:normal-case focus:outline-none focus:ring-2 focus:ring-[#ffdc36] w-full"
+                            />
+                            <button
+                                type="submit"
+                                disabled={subStatus === "loading"}
+                                className="bg-[#ffdc36] text-black px-10 py-4 uppercase tracking-wider hover:bg-white transition-colors inline-flex items-center justify-center gap-2 group w-full disabled:opacity-70 disabled:cursor-not-allowed"
+                            >
+                                {subStatus === "loading" ? "Subscribing..." : "Subscribe"}
+                                <ArrowRight className="group-hover:translate-x-1 transition-transform" />
+                            </button>
+                            {subMsg && (
+                                <p className={`text-sm mt-2 ${subStatus === "success" ? "text-[#ffdc36]" : "text-red-400"}`}>
+                                    {subMsg}
+                                </p>
+                            )}
+                        </form>
+
+                        <div className="mt-12 flex justify-center gap-8">
+                            <a
+                                href="https://www.instagram.com/glasgowuniversityboatclub"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="32"
+                                    height="32"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                                    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                                </svg>
+                            </a>
+                            <a
+                                href="https://www.facebook.com/GlasgowUniversityBoatClub"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="32"
+                                    height="32"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                >
+                                    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                                </svg>
+                            </a>
+                            <a
+                                href="https://x.com/GUBC"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="32"
+                                    height="32"
+                                    viewBox="0 0 24 24"
+                                    fill="currentColor"
+                                >
+                                    <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </section>
             </div>
-          </div>
         </section>
-      </div>
-    </section>
-  );
+    );
 }
