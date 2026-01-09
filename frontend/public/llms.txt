@@ -1,0 +1,17 @@
+# Glasgow University Boat Club (GUBC) Website
+
+## Description
+A full-stack web application for the Glasgow University Boat Club, featuring content management for news/events and an e-commerce section for merchandise.
+
+## Tech Stack
+- Frontend: Next.js (TypeScript, Tailwind CSS)
+- Backend: Spring Boot (Java)
+- Payments: Stripe Integration
+
+## Routes
+- /: Home page
+- /committee: Committee members list
+- /news: News articles
+- /events: Upcoming and past events
+- /merch: Merchandise store with Stripe checkout
+- /admin: Admin dashboard (requires authentication)
