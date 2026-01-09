@@ -1,41 +1,97 @@
 "use client";
 
-import { useState } from "react";
-import { ShoppingCart, Plus, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { ShoppingCart, Plus, X, Loader2, ArrowLeft, Truck, Store } from "lucide-react";
+import { loadStripe } from "@stripe/stripe-js";
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
+import { useSearchParams } from "next/navigation";
 
 type OrderItem = { item: string; size: string; quantity: string };
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+
+interface MerchItem {
+  id: number;
+  name: string;
+  price: number; // in pence
+  image_url?: string;
+}
 
 export default function MerchPage() {
+  const searchParams = useSearchParams();
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     comments: "",
   });
+  const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">("pickup");
   const [orderItems, setOrderItems] = useState<OrderItem[]>([
     { item: "", size: "", quantity: "1" },
   ]);
+  const [clientSecret, setClientSecret] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [items, setItems] = useState<MerchItem[]>([]);
 
-  const items = [
-    { name: "GUBC Hoodie", price: "£35" },
-    { name: "GUBC T-Shirt", price: "£18" },
-    { name: "GUBC Polo Shirt", price: "£25" },
-    { name: "GUBC Jacket", price: "£45" },
-    { name: "GUBC Beanie", price: "£12" },
-    { name: "GUBC Water Bottle", price: "£8" },
-  ];
   const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (searchParams.get("success")) {
+      alert("Order successful! Thank you for your purchase.");
+    }
+    fetchItems();
+  }, [searchParams]);
+
+  const fetchItems = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/merch`);
+      if (res.ok) {
+        const data = await res.json();
+        setItems(data);
+      }
+    } catch (e) {
+      console.error("Failed to load merch items");
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
     if (orderItems.length === 0) {
-      alert("Please add at least one item to your order.");
+      setError("Please add at least one item to your order.");
       return;
     }
-    alert(
-      "Order submitted! We will contact you shortly to arrange payment and collection."
-    );
-    setFormData({ name: "", email: "", comments: "" });
-    setOrderItems([{ item: "", size: "", quantity: "1" }]);
+
+    setLoading(true);
+    try {
+      const itemsPayload = orderItems.map(i => ({
+        name: i.item,
+        size: i.size,
+        quantity: parseInt(i.quantity)
+      }));
+
+      if (deliveryMethod === "delivery") {
+        itemsPayload.push({ name: "Delivery", size: "Standard", quantity: 1 });
+      }
+
+      const res = await fetch(`${API_URL}/api/checkout`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: itemsPayload
+        }),
+      });
+
+      if (!res.ok) throw new Error("Checkout failed");
+      const data = await res.json();
+      setClientSecret(data.clientSecret);
+      // Scroll to top to ensure the checkout is visible
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (error) {
+      setError("Something went wrong initiating checkout. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleChange = (
@@ -115,9 +171,23 @@ export default function MerchPage() {
         {/* Content */}
         <div className="mt-10 mb-16">
 
-        <div className="bg-gray-100 p-6 sm:p-8 rounded-2xl shadow-lg max-w-6xl mx-auto">
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Product List */}
+        <div className="bg-gray-100 p-6 sm:p-8 rounded-2xl shadow-lg max-w-6xl mx-auto min-h-[600px] transition-all duration-300 ease-in-out">
+          {clientSecret ? (
+            <div className="w-full max-w-4xl mx-auto pt-8 pb-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
+              <button
+                onClick={() => setClientSecret("")}
+                className="group mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition-colors font-medium"
+              >
+                <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+                Back to Order Details
+              </button>
+              <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret }}>
+                <EmbeddedCheckout className="w-full rounded-xl shadow-sm overflow-hidden py-8 bg-white" />
+              </EmbeddedCheckoutProvider>
+            </div>
+          ) : (
+            <div className="grid lg:grid-cols-2 gap-12">
+              {/* Product List */}
             <div>
               <h3 className="text-black text-2xl mb-6">Available Items</h3>
               <div className="space-y-4">
@@ -137,7 +207,7 @@ export default function MerchPage() {
                       <ShoppingCart className="text-black" size={20} />
                       <span className="text-gray-900">{item.name}</span>
                     </div>
-                    <span className="text-black">{item.price}</span>
+                    <span className="text-black">£{(item.price / 100).toFixed(2)}</span>
                   </div>
                 ))}
               </div>
@@ -171,6 +241,44 @@ export default function MerchPage() {
                     required
                     className="w-full text-gray-900 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-black focus:border-transparent"
                   />
+                </div>
+
+                {/* Delivery Options */}
+                <div className="bg-white p-4 rounded-lg border-2 border-gray-200">
+                  <label className="block text-gray-700 mb-3 text-sm font-bold uppercase tracking-wider">Delivery Method</label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setDeliveryMethod("pickup")}
+                      className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all ${
+                        deliveryMethod === "pickup"
+                          ? "border-black bg-[#ffdc36]/10 text-black"
+                          : "border-gray-200 text-gray-500 hover:border-gray-300"
+                      }`}
+                    >
+                      <Store size={24} className="mb-2" />
+                      <span className="font-bold text-sm">Pickup</span>
+                      <span className="text-xs text-gray-500">Free</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setDeliveryMethod("delivery")}
+                      className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all ${
+                        deliveryMethod === "delivery"
+                          ? "border-black bg-[#ffdc36]/10 text-black"
+                          : "border-gray-200 text-gray-500 hover:border-gray-300"
+                      }`}
+                    >
+                      <Truck size={24} className="mb-2" />
+                      <span className="font-bold text-sm">Delivery</span>
+                      <span className="text-xs text-gray-500">+ £5.00</span>
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-3 text-center">
+                    {deliveryMethod === "pickup" 
+                      ? "Collect your items from the boathouse during training times."
+                      : "Items will be shipped to the address provided at checkout."}
+                  </p>
                 </div>
 
                 <div>
@@ -247,7 +355,7 @@ export default function MerchPage() {
                           <option value="">Select an item</option>
                           {items.map((item) => (
                             <option key={item.name} value={item.name}>
-                              {item.name} - {item.price}
+                              {item.name} - £{(item.price / 100).toFixed(2)}
                             </option>
                           ))}
                         </select>
@@ -320,15 +428,24 @@ export default function MerchPage() {
                   ></textarea>
                 </div>
 
+                {error && (
+                  <div className="p-3 bg-red-100 border border-red-200 text-red-700 rounded-lg text-sm">
+                    {error}
+                  </div>
+                )}
+
                 <button
                   type="submit"
-                  className="w-full bg-black text-[#ffdc36] py-3 rounded-lg hover:bg-gray-900 transition-colors uppercase tracking-wider"
+                  disabled={loading}
+                  className="w-full bg-black text-[#ffdc36] py-3 rounded-lg hover:bg-gray-900 transition-colors uppercase tracking-wider flex justify-center items-center gap-2 disabled:opacity-70"
                 >
-                  Submit Order
+                  {loading && <Loader2 className="animate-spin" size={20} />}
+                  {loading ? "Preparing Checkout..." : "Proceed to Payment"}
                 </button>
               </form>
             </div>
           </div>
+          )}
         </div>
         </div>
       </div>

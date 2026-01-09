@@ -27,6 +27,9 @@ public class StorageService {
     @Value("${supabase.news.bucket}")
     private String newsBucket;
 
+    @Value("${supabase.merch.bucket}")
+    private String merchBucket;
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     public String uploadNewsImage(MultipartFile file) throws IOException {
@@ -45,6 +48,24 @@ public class StorageService {
         restTemplate.postForEntity(url, requestEntity, String.class);
 
         return supabaseUrl + "/storage/v1/object/public/" + newsBucket + "/" + filename;
+    }
+
+    public String uploadMerchImage(MultipartFile file) throws IOException {
+        String filename = UUID.randomUUID().toString() + "-" + StringUtils.cleanPath(file.getOriginalFilename());
+        String url = supabaseUrl + "/storage/v1/object/" + merchBucket + "/" + filename;
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + supabaseKey);
+
+        String contentType = file.getContentType();
+        headers.setContentType(StringUtils.hasText(contentType) ? MediaType.parseMediaType(contentType)
+                : MediaType.APPLICATION_OCTET_STREAM);
+
+        HttpEntity<byte[]> requestEntity = new HttpEntity<>(file.getBytes(), headers);
+
+        restTemplate.postForEntity(url, requestEntity, String.class);
+
+        return supabaseUrl + "/storage/v1/object/public/" + merchBucket + "/" + filename;
     }
 
     public String uploadPublic(String filename, MultipartFile file) {
