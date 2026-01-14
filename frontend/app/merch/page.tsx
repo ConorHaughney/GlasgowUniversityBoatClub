@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { ShoppingCart, Plus, X, Loader2, ArrowLeft, Truck, Store } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
@@ -20,6 +20,14 @@ interface MerchItem {
 }
 
 export default function MerchPage() {
+    return (
+        <Suspense fallback={<div className="p-6 text-gray-700">Loading merch...</div>}>
+            <MerchContent />
+        </Suspense>
+    );
+}
+
+function MerchContent() {
     const searchParams = useSearchParams();
     const [formData, setFormData] = useState({
         name: "",
