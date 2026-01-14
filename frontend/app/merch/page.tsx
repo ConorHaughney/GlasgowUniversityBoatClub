@@ -2,15 +2,14 @@
 
 export const dynamic = 'force-dynamic';
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useMemo, useState, useEffect } from "react";
 import { ShoppingCart, Plus, X, Loader2, ArrowLeft, Truck, Store } from "lucide-react";
-import { loadStripe } from "@stripe/stripe-js";
+import { loadStripe, Stripe | null } from "@stripe/stripe-js";
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { useSearchParams } from "next/navigation";
 
 type OrderItem = { item: string; size: string; quantity: string };
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface MerchItem {
     id: number;
@@ -29,6 +28,10 @@ export default function MerchPage() {
 
 function MerchContent() {
     const searchParams = useSearchParams();
+    const stripePromise = useMemo(() => {
+        const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+        return key ? loadStripe(key) : null;
+    }, []);
     const [formData, setFormData] = useState({
         name: "",
         email: "",
@@ -182,7 +185,7 @@ function MerchContent() {
                 <div className="mt-10 mb-16">
 
                     <div className="bg-gray-100 p-6 sm:p-8 rounded-2xl shadow-lg max-w-6xl mx-auto min-h-[600px] transition-all duration-300 ease-in-out">
-                        {clientSecret ? (
+                        {clientSecret && stripePromise ? (
                             <div className="w-full max-w-4xl mx-auto pt-8 pb-16 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <button
                                     onClick={() => setClientSecret("")}
@@ -451,6 +454,11 @@ function MerchContent() {
                                         </button>
                                     </form>
                                 </div>
+                                {!stripePromise && (
+                                    <div className="col-span-2 mt-4 p-3 bg-yellow-100 border border-yellow-200 text-yellow-800 rounded-lg text-sm">
+                                        Missing NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY. Checkout is disabled.
+                                    </div>
+                                )}
                             </div>
                         )}
                     </div>
