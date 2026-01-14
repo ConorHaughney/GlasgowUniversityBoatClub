@@ -29,7 +29,7 @@ export default function NavBar() {
           <Link href="/" className="flex items-center gap-3">
             <div className="drop-shadow-[0_0_80px_rgba(255,215,0,1)] drop-shadow-[0_0_40px_rgba(255,215,0,0.8)]" style={{ filter: 'drop-shadow(0px 0px 80px rgba(255, 215, 0, 1)) drop-shadow(0px 0px 40px rgba(255, 215, 0, 0.8))' }}>
               <Image 
-                src="/GUBC_logo_Clean.png"
+                src="https://nfinlwbvbsoonbxqflvh.supabase.co/storage/v1/object/public/site_images/GUBC_Logo_Clean.png"
                 alt="GUBC Logo" 
                 width={64}
                 height={64}

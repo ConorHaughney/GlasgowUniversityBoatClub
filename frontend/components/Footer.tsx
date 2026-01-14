@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="text-center">
           <div className="relative h-20 w-20 mx-auto mb-6">
             <Image
-              src="/GUBC_logo_Clean.png"
+              src="https://nfinlwbvbsoonbxqflvh.supabase.co/storage/v1/object/public/site_images/GUBC_Logo_Clean.png"
               alt="GUBC Logo"
               fill
               className="object-contain drop-shadow-[0_0_40px_rgba(255,215,0,1)]"
