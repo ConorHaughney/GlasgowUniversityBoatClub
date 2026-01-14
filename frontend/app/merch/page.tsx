@@ -4,7 +4,8 @@ export const dynamic = 'force-dynamic';
 
 import { Suspense, useMemo, useState, useEffect } from "react";
 import { ShoppingCart, Plus, X, Loader2, ArrowLeft, Truck, Store } from "lucide-react";
-import { loadStripe, Stripe | null } from "@stripe/stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
+import type { Stripe } from "@stripe/stripe-js";
 import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
 import { useSearchParams } from "next/navigation";
 
@@ -28,7 +29,7 @@ export default function MerchPage() {
 
 function MerchContent() {
     const searchParams = useSearchParams();
-    const stripePromise = useMemo(() => {
+    const stripePromise = useMemo<Promise<Stripe | null> | null>(() => {
         const key = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
         return key ? loadStripe(key) : null;
     }, []);
