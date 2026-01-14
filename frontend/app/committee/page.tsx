@@ -1,7 +1,7 @@
 import { ImageWithFallback } from "@/components/Fallback";
 import { Mail } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+const API_URL = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 type CommitteeMember = {
     id: number;

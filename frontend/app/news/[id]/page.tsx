@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ImageWithFallback } from "@/components/Fallback";
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
+const API = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://localhost:8080";
 
 type Article = {
     id: number;

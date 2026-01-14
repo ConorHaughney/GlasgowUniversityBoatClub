@@ -324,7 +324,7 @@ export default function NewsPage() {
 
                         <div className="mt-12 flex justify-center gap-8">
                             <a
-                                href="https://www.instagram.com/glasgowuniversityboatclub"
+                                href="https://www.instagram.com/glasgowuniboatclub/#"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
@@ -346,7 +346,7 @@ export default function NewsPage() {
                                 </svg>
                             </a>
                             <a
-                                href="https://www.facebook.com/GlasgowUniversityBoatClub"
+                                href="https://www.facebook.com/glasgowuniversityrowing"
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"

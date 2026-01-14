@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { Calendar, Mail, Heart, Ticket } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Calendar, Mail, Heart } from "lucide-react";
 
 // Reusable Image Placeholder
 const ImagePlaceholder = ({
@@ -29,6 +29,19 @@ export default function AlumniPage() {
     const [subForm, setSubForm] = useState({ firstName: "", lastName: "", email: "" });
     const [subStatus, setSubStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
     const [subMsg, setSubMsg] = useState("");
+
+    useEffect(() => {
+        const script = document.createElement("script");
+        script.src = "https://web-cdn.fixr.co/scripts/fixr-shop-widget.v1.min.js";
+        script.setAttribute("data-fixr-shop-id", "f52a3ea9-c927-4430-a051-a2f3a1067e4d");
+        script.async = true;
+
+        const container = document.getElementById("fixr-widget-container");
+        if (container) {
+            container.innerHTML = "";
+            container.appendChild(script);
+        }
+    }, []);
 
     async function handleSubscribe(e: React.FormEvent) {
         e.preventDefault();
@@ -187,52 +200,10 @@ export default function AlumniPage() {
                             <h2 className="text-3xl font-bold text-white uppercase tracking-tight">
                                 Book <span className="text-[#ffdc36]">Tickets</span>
                             </h2>
-                            <span className="text-zinc-500 text-sm hidden sm:block">
-                                Powered by FIXR
-                            </span>
                         </div>
 
-                        <div className="bg-zinc-900 border border-zinc-800 rounded-sm overflow-hidden">
-                            <div className="grid grid-cols-1 md:grid-cols-2">
-                                <div className="p-8 md:p-12 flex flex-col justify-center space-y-6">
-                                    <div>
-                                        <h3 className="text-xl font-bold text-white mb-2">
-                                            Annual Alumni Dinner
-                                        </h3>
-                                        <p className="text-zinc-400 leading-relaxed">
-                                            Secure your seat for the highlight of the alumni calendar.
-                                            Tickets include a three-course meal, wine, and ceilidh.
-                                            All bookings are handled securely via our ticketing
-                                            partner.
-                                        </p>
-                                    </div>
-
-                                    <div className="pt-4">
-                                        <a
-                                            href="https://fixr.co/organiser/gubc"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="inline-flex items-center justify-center w-full sm:w-auto bg-[#ffdc36] text-black px-8 py-4 rounded-sm font-bold uppercase tracking-wider hover:bg-[#e6c229] transition-colors gap-2"
-                                        >
-                                            <Ticket size={20} />
-                                            Get Tickets on FIXR
-                                        </a>
-                                    </div>
-                                </div>
-
-                                <div className="relative min-h-[300px] bg-black border-t md:border-t-0 md:border-l border-zinc-800 group">
-                                    <div className="absolute inset-0 bg-[url('https://placehold.co/800x800/111/333?text=Dinner+Event')] bg-cover bg-center opacity-60 group-hover:opacity-50 transition-opacity"></div>
-                                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent"></div>
-                                    <div className="absolute bottom-8 left-8 right-8">
-                                        <p className="text-white font-bold text-lg mb-1">
-                                            Next Event: GUBC Annual Dinner
-                                        </p>
-                                        <p className="text-zinc-400 text-sm">
-                                            Glasgow University Union
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
+                        <div className="bg-zinc-900 border border-zinc-800 rounded-sm overflow-hidden p-4 min-h-[500px]">
+                            <div id="fixr-widget-container" className="w-full"></div>
                         </div>
                     </div>
 
