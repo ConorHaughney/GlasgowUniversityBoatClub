@@ -1,5 +1,7 @@
 "use client";
 
+export const dynamic = 'force-dynamic';
+
 import { useState, useEffect } from "react";
 import { ShoppingCart, Plus, X, Loader2, ArrowLeft, Truck, Store } from "lucide-react";
 import { loadStripe } from "@stripe/stripe-js";
