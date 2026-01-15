@@ -17,7 +17,7 @@ export default function Footer() {
             Glasgow University Boat Club
           </p>
           <p className="text-gray-400 uppercase text-sm tracking-wider mb-6">
-            Excellence in rowing since 1877
+            Excellence in rowing since 1867
           </p>
           <div className="h-1 w-32 bg-[#ffdc36] mx-auto mb-6"></div>
           <p className="text-gray-500 text-sm">
