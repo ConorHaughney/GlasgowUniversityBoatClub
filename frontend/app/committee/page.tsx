@@ -88,8 +88,10 @@ export default async function Committee() {
         .map((m, i) => ({ m, i }))
         .filter(({ i }) => ![0, 1, 3, 4, 5].includes(i))
         .map(({ m }) => m);
-    const firstEight = others.slice(0, 8);
-    const lastThree = others.slice(8);
+
+    // Filter captains for the "last three" section (rendered above the bottom section)
+    const lastThree = others.filter((m) => m.role.toLowerCase().includes("captain"));
+    const firstEight = others.filter((m) => !m.role.toLowerCase().includes("captain"));
 
     return (
         <section id="committee" className="bg-gray-1000 mt-20">
@@ -263,8 +265,8 @@ export default async function Committee() {
                     })}
                 </div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto mb-8">
-                    {firstEight.map((member) => {
+                <div className={`grid md:grid-cols-${lastThree.length > 2 ? '3' : '2'} gap-8 max-w-5xl mx-auto mb-8 justify-center`}>
+                    {lastThree.map((member) => {
                         const { firstName, lastName } = formatName(member.name);
                         return (
                             <div
@@ -312,8 +314,8 @@ export default async function Committee() {
                     })}
                 </div>
 
-                <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-                    {lastThree.map((member) => {
+                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+                    {firstEight.map((member) => {
                         const { firstName, lastName } = formatName(member.name);
                         return (
                             <div
