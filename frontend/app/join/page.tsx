@@ -1,4 +1,4 @@
-import { GraduationCap, Briefcase, Globe, Pencil } from "lucide-react";
+import { GraduationCap, Briefcase, Globe, Pencil, ClipboardList } from "lucide-react";
 
 export default function JoinPage() {
     return (
@@ -49,6 +49,29 @@ export default function JoinPage() {
                             </div>
                         </div>
 
+                        {/* Interest Form CTA */}
+                        <div className="mt-12 bg-zinc-900 border border-zinc-800 rounded-lg p-8 text-center relative overflow-hidden group">
+                            <div className="absolute inset-0 bg-[#ffdc36] opacity-0 group-hover:opacity-5 transition-opacity duration-500"></div>
+                            <div className="relative z-10">
+                                <ClipboardList className="mx-auto h-12 w-12 text-[#ffdc36] mb-4" />
+                                <h2 className="text-3xl font-bold text-white mb-4 uppercase tracking-tight">
+                                    Register Your Interest
+                                </h2>
+                                <p className="text-gray-300 text-lg mb-8 max-w-2xl mx-auto">
+                                    Fill out our interest form to get the latest updates on taster sessions, recruitment, and joining the club.
+                                </p>
+                                <div className="w-full max-w-4xl mx-auto h-[600px] sm:h-[800px] bg-white rounded-lg overflow-hidden">
+                                    <iframe
+                                        src="https://forms.gle/JWopDKhSReH6tH7S8"
+                                        className="w-full h-full border-0"
+                                        title="GUBC Interest Form"
+                                    >
+                                        Loading…
+                                    </iframe>
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Application Steps Overview */}
                         <h2 className="text-4xl font-bold text-white mb-8 tracking-tight mt-12">
                             Application Overview
@@ -60,16 +83,21 @@ export default function JoinPage() {
                                 <GraduationCap className="h-10 w-10 text-[#ffdc36] mb-4" />
                                 <h3 className="text-2xl font-semibold mb-3 text-[#ffdc36]">Undergraduate Study</h3>
                                 <p className="mb-4">
-                                    All applications for full-time undergraduate programmes at the University of Glasgow must be made through the UCAS (Universities and Colleges Admissions Service) website.
+                                    Applications for full-time undergraduate programmes can be made through UCAS or the Common App (for international students).
                                 </p>
                                 <ul className="list-disc list-inside space-y-2 ml-4">
                                     <li><strong>Entry Requirements:</strong> Check the specific academic requirements (A-Levels, Highers, IB, etc.) for your chosen programme.</li>
                                     <li><strong>Personal Statement:</strong> Prepare a strong personal statement demonstrating your interest and suitability for the course.</li>
                                     <li><strong>Key Deadlines:</strong> The main application deadline is typically 15 January for entry in the following academic year.</li>
                                 </ul>
-                                <a href="https://www.ucas.com/" target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex items-center text-[#ffdc36] hover:text-white transition duration-300">
-                                    Apply via UCAS →
-                                </a>
+                                <div className="flex flex-col sm:flex-row gap-4 mt-4">
+                                    <a href="https://www.ucas.com/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-[#ffdc36] hover:text-white transition duration-300">
+                                        Apply via UCAS →
+                                    </a>
+                                    <a href="https://www.commonapp.org/explore/university-glasgow" target="_blank" rel="noopener noreferrer" className="inline-flex items-center text-[#ffdc36] hover:text-white transition duration-300">
+                                        Apply via Common App →
+                                    </a>
+                                </div>
                             </div>
 
                             {/* Postgraduate Applications */}
@@ -142,14 +170,24 @@ export default function JoinPage() {
                             <p className="text-black mb-6 max-w-2xl mx-auto">
                                 Take the next step by exploring the University of Glasgow&apos;s full prospectus and application resources.
                             </p>
-                            <a
-                                href="https://www.gla.ac.uk/study/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-black bg-[#ffdc36] hover:bg-yellow-400 transition duration-300 shadow-lg uppercase tracking-wider"
-                            >
-                                Visit University of Glasgow Study Page
-                            </a>
+                            <div className="flex flex-col items-center justify-center gap-6">
+                                <a
+                                    href="https://www.gla.ac.uk/study/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-black bg-[#ffdc36] hover:bg-white transition duration-300 shadow-lg uppercase tracking-wider"
+                                >
+                                    Visit University of Glasgow Study Page
+                                </a>
+                                <a
+                                    href="https://www.commonapp.org/explore/university-glasgow"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-black bg-[#ffdc36] hover:bg-white transition duration-300 shadow-lg uppercase tracking-wider"
+                                >
+                                    Apply via Common App
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>

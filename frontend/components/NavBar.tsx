@@ -50,7 +50,7 @@ export default function NavBar() {
           */}
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex space-x-8">
+          <div className="hidden md:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -64,6 +64,12 @@ export default function NavBar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/join"
+              className="bg-[#ffdc36] text-black px-6 py-2 rounded-full uppercase tracking-wider text-sm font-bold hover:bg-white transition-colors"
+            >
+              Join Us
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -95,6 +101,13 @@ export default function NavBar() {
                 {link.label}
               </Link>
             ))}
+            <Link
+              href="/join"
+              className="block w-full text-center bg-[#ffdc36] text-black px-6 py-2 rounded-full uppercase tracking-wider text-sm font-bold hover:bg-white transition-colors mt-4"
+              onClick={() => setIsOpen(false)}
+            >
+              Join Us
+            </Link>
           </div>
         </div>
       )}
