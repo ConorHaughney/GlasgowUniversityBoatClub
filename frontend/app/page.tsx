@@ -60,7 +60,7 @@ export default function Home() {
                                 />
                             </Link>
                             <Link
-                                href="/about"
+                                href="/our-history"
                                 className="bg-transparent border-2 border-white text-white px-10 py-4 uppercase tracking-wider hover:bg-white hover:text-black transition-all duration-300 text-center"
                             >
                                 Learn More
