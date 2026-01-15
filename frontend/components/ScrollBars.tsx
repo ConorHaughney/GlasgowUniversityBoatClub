@@ -41,36 +41,36 @@ export function ScrollBars() {
     <>
       {/* Left outer bar */}
       <div
-        className="fixed top-0 bottom-0 w-[8px] z-50 pointer-events-none transition-colors duration-20"
+        className="fixed top-0 bottom-0 w-2 z-50 pointer-events-none transition-colors duration-20"
         style={{
-          left: "20px",
+          left: "1.25rem",
           backgroundColor: getColor(),
         }}
       />
 
       {/* Left inner bar */}
       <div
-        className="fixed top-0 bottom-0 w-[8px] z-50 pointer-events-none transition-colors duration-20"
+        className="fixed top-0 bottom-0 w-2 z-50 pointer-events-none transition-colors duration-20"
         style={{
-          left: "40px",
+          left: "2.5rem",
           backgroundColor: getColor(),
         }}
       />
 
       {/* Right inner bar */}
       <div
-        className="fixed top-0 bottom-0 w-[8px] z-50 pointer-events-none transition-colors duration-20"
+        className="fixed top-0 bottom-0 w-2 z-50 pointer-events-none transition-colors duration-20"
         style={{
-          right: "40px",
+          right: "2.5rem",
           backgroundColor: getColor(),
         }}
       />
 
       {/* Right outer bar */}
       <div
-        className="fixed top-0 bottom-0 w-[8px] z-50 pointer-events-none transition-colors duration-20"
+        className="fixed top-0 bottom-0 w-2 z-50 pointer-events-none transition-colors duration-20"
         style={{
-          right: "20px",
+          right: "1.25rem",
           backgroundColor: getColor(),
         }}
       />

@@ -120,7 +120,7 @@ export default function NewsPage() {
     }
 
     return (
-        <section id="news" className="bg-gray-1000 mt-20">
+        <section id="news" className="bg-zinc-950 mt-20 overflow-hidden">
             <div className="mx-auto px-6 sm:px-8 lg:px-10">
                 {/* Hero Section */}
                 <section className="relative py-24 bg-black text-white overflow-hidden">
@@ -148,7 +148,7 @@ export default function NewsPage() {
                 </section>
 
                 {/* Recent News Grid */}
-                <section className="py-24 bg-gray-1000">
+                <section className="py-24 bg-zinc-950">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="mb-16">
                             <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
@@ -265,7 +265,7 @@ export default function NewsPage() {
                 </section>
 
                 {/* Newsletter CTA */}
-                <section className="relative py-32 bg-grey-1000 text-white overflow-hidden">
+                <section className="relative py-32 bg-zinc-900 text-white overflow-hidden">
                     <div className="absolute inset-0 bg-[#ffdc36] transform skew-y-3 origin-bottom-left opacity-10"></div>
 
                     <div className="relative max-w-4xl mx-auto px-4 text-center">

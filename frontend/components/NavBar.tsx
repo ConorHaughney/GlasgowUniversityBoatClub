@@ -33,7 +33,7 @@ export default function NavBar() {
                 alt="GUBC Logo" 
                 width={64}
                 height={64}
-                className="object-contain drop-shadow-[0_0_40px_rgba(255,215,0,1)]"
+                className="object-contain drop-shadow-[0_0_40px_rgba(255,215,0,1)] w-16 h-16"
               />
             </div>
           </Link>
