@@ -120,7 +120,7 @@ export default function NewsPage() {
     }
 
     return (
-        <section id="news" className="bg-zinc-950 mt-20 overflow-hidden">
+        <section id="news" className="bg-gray-1000 mt-20 overflow-hidden">
             <div className="mx-auto px-6 sm:px-8 lg:px-10">
                 {/* Hero Section */}
                 <section className="relative py-24 bg-black text-white overflow-hidden">
@@ -148,7 +148,7 @@ export default function NewsPage() {
                 </section>
 
                 {/* Recent News Grid */}
-                <section className="py-24 bg-zinc-950">
+                <section className="py-24 bg-gray-1000">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="mb-16">
                             <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
@@ -265,7 +265,7 @@ export default function NewsPage() {
                 </section>
 
                 {/* Newsletter CTA */}
-                <section className="relative py-32 bg-zinc-900 text-white overflow-hidden">
+                <section className="relative py-32 bg-grey-1000 text-white overflow-hidden">
                     <div className="absolute inset-0 bg-[#ffdc36] transform skew-y-3 origin-bottom-left opacity-10"></div>
 
                     <div className="relative max-w-4xl mx-auto px-4 text-center">
@@ -363,22 +363,6 @@ export default function NewsPage() {
                                     strokeLinejoin="round"
                                 >
                                     <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                                </svg>
-                            </a>
-                            <a
-                                href="https://x.com/GUBC"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-gray-400 hover:text-[#ffdc36] transition-colors transform hover:scale-110"
-                            >
-                                <svg
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    width="32"
-                                    height="32"
-                                    viewBox="0 0 24 24"
-                                    fill="currentColor"
-                                >
-                                    <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
                                 </svg>
                             </a>
                         </div>
