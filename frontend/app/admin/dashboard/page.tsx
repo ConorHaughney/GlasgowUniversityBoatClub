@@ -310,6 +310,7 @@ export default function AdminDashboard() {
             }
 
             photoFilesRef.current.clear();
+            await fetchCommittee(jwt);
         } catch (err) {
             setError((err as Error).message || "Failed to save committee");
         } finally {
@@ -629,12 +630,11 @@ export default function AdminDashboard() {
                                                         type="file"
                                                         accept="image/*"
                                                         className="hidden"
-                                                        onChange={(e) =>
-                                                            handlePhotoSelect(
-                                                                member.id,
-                                                                e.target.files?.[0] ?? null
-                                                            )
-                                                        }
+                                                        onChange={(e) => {
+                                                            const file = e.target.files?.[0] ?? null;
+                                                            handlePhotoSelect(member.id, file);
+                                                            e.target.value = "";
+                                                        }}
                                                         aria-label={`Upload photo for ${member.name}`}
                                                         title={`Upload photo for ${member.name}`}
                                                     />

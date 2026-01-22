@@ -45,7 +45,7 @@ export default function OurHistoryPage() {
             year: "1877",
             title: "The First Scottish Boat Race",
             description:
-                "The inaugural contest against Edinburgh University. This rivalry is the third-oldest varsity boat race in the world, predating the Celtic–Rangers rivalry.",
+                "The inaugural contest against Edinburgh University. This rivalry is the third-oldest varsity boat race in the world.",
         },
         {
             year: "1924",

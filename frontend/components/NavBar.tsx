@@ -7,110 +7,97 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 
 export default function NavBar() {
-  const [isOpen, setIsOpen] = useState(false);
-  const pathname = usePathname();
+    const [isOpen, setIsOpen] = useState(false);
+    const pathname = usePathname();
 
-  const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/committee', label: 'Committee' },
-    { href: '/news', label: 'News' },
-    { href: '/events', label: 'Events' },
-    { href: '/merch', label: 'Merch' },
-    { href: '/our-history', label: 'Our History' },
-    { href: '/alumni', label: 'Alumni' },
-  ];
+    const navLinks = [
+        { href: '/', label: 'Home' },
+        { href: '/committee', label: 'Committee' },
+        { href: '/news', label: 'News' },
+        { href: '/events', label: 'Events' },
+        { href: '/merch', label: 'Merch' },
+        { href: '/our-history', label: 'Our History' },
+        { href: '/alumni', label: 'Alumni' },
+    ];
 
-  const isActive = (path: string) => pathname === path;
+    const isActive = (path: string) => pathname === path;
 
-  return (
-    <nav className="bg-black overflow-hidden shadow-lg fixed w-full top-0 z-50 border-b-2 border-[#ffdc36]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-24">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="drop-shadow-[0_0_80px_rgba(255,215,0,1)] drop-shadow-[0_0_40px_rgba(255,215,0,0.8)]" style={{ filter: 'drop-shadow(0px 0px 80px rgba(255, 215, 0, 1)) drop-shadow(0px 0px 40px rgba(255, 215, 0, 0.8))' }}>
-              <Image 
-                src="https://nfinlwbvbsoonbxqflvh.supabase.co/storage/v1/object/public/site_images/GUBC_Logo_Clean.png"
-                alt="GUBC Logo" 
-                width={64}
-                height={64}
-                className="object-contain drop-shadow-[0_0_40px_rgba(255,215,0,1)] w-16 h-16"
-              />
+    return (
+        <nav className="bg-black overflow-hidden shadow-lg fixed w-full top-0 z-50 border-b-2 border-[#ffdc36]">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="flex justify-between items-center h-24">
+                    <Link href="/" className="flex items-center gap-3">
+                        <div className="drop-shadow-[0_0_80px_rgba(255,215,0,1)] drop-shadow-[0_0_40px_rgba(255,215,0,0.8)]" style={{ filter: 'drop-shadow(0px 0px 80px rgba(255, 215, 0, 1)) drop-shadow(0px 0px 40px rgba(255, 215, 0, 0.8))' }}>
+                            <Image
+                                src="https://nfinlwbvbsoonbxqflvh.supabase.co/storage/v1/object/public/site_images/GUBC_Logo_Clean.png"
+                                alt="GUBC Logo"
+                                width={64}
+                                height={64}
+                                className="object-contain drop-shadow-[0_0_40px_rgba(255,215,0,1)] w-16 h-16"
+                            />
+                        </div>
+                    </Link>
+
+                    {/* Desktop Navigation */}
+                    <div className="hidden md:flex items-center space-x-8">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={`uppercase tracking-wider text-sm transition-colors py-2 ${isActive(link.href)
+                                    ? 'text-[#ffdc36] border-b-2 border-[#ffdc36]'
+                                    : 'text-white hover:text-[#ffdc36]'
+                                    }`}
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                        <Link
+                            href="/join"
+                            className="bg-[#ffdc36] text-black px-6 py-2 uppercase tracking-wider text-sm font-bold hover:bg-white transition-colors"
+                        >
+                            Join Us
+                        </Link>
+                    </div>
+
+                    {/* Mobile Menu Button */}
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="md:hidden p-2 text-white"
+                        aria-label="Toggle menu"
+                    >
+                        {isOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+                </div>
             </div>
-          </Link>
 
-          {/* 
-          
-          <Image
-                        src="/GUBC_logo_Clean.png"
-                        alt="GUBC Logo"
-                        fill
-                        className="object-contain drop-shadow-[0_0_40px_rgba(255,215,0,1)]"
-                      />
-          
-          */}
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`uppercase tracking-wider text-sm transition-colors py-2 ${
-                  isActive(link.href)
-                    ? 'text-[#ffdc36] border-b-2 border-[#ffdc36]'
-                    : 'text-white hover:text-[#ffdc36]'
-                }`}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              href="/join"
-              className="bg-[#ffdc36] text-black px-6 py-2 rounded-full uppercase tracking-wider text-sm font-bold hover:bg-white transition-colors"
-            >
-              Join Us
-            </Link>
-          </div>
-
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 text-white"
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Mobile Navigation */}
-      {isOpen && (
-        <div className="md:hidden bg-black border-t border-[#ffdc36]">
-          <div className="px-4 pt-2 pb-4 space-y-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`block py-2 uppercase tracking-wider text-sm ${
-                  isActive(link.href)
-                    ? 'text-[#ffdc36]'
-                    : 'text-white hover:text-[#ffdc36]'
-                }`}
-                onClick={() => setIsOpen(false)}
-              >
-                {link.label}
-              </Link>
-            ))}
-            <Link
-              href="/join"
-              className="block w-full text-center bg-[#ffdc36] text-black px-6 py-2 rounded-full uppercase tracking-wider text-sm font-bold hover:bg-white transition-colors mt-4"
-              onClick={() => setIsOpen(false)}
-            >
-              Join Us
-            </Link>
-          </div>
-        </div>
-      )}
-    </nav>
-  );
+            {/* Mobile Navigation */}
+            {isOpen && (
+                <div className="md:hidden bg-black border-t border-[#ffdc36]">
+                    <div className="px-4 pt-2 pb-4 space-y-2">
+                        {navLinks.map((link) => (
+                            <Link
+                                key={link.href}
+                                href={link.href}
+                                className={`block py-2 uppercase tracking-wider text-sm ${isActive(link.href)
+                                    ? 'text-[#ffdc36]'
+                                    : 'text-white hover:text-[#ffdc36]'
+                                    }`}
+                                onClick={() => setIsOpen(false)}
+                            >
+                                {link.label}
+                            </Link>
+                        ))}
+                        <Link
+                            href="/join"
+                            className="block w-full text-center bg-[#ffdc36] text-black px-6 py-2 uppercase tracking-wider text-sm font-bold hover:bg-white transition-colors mt-4"
+                            onClick={() => setIsOpen(false)}
+                        >
+                            Join Us
+                        </Link>
+                    </div>
+                </div>
+            )}
+        </nav>
+    );
 }

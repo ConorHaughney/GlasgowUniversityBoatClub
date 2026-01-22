@@ -118,6 +118,18 @@ export default async function Committee() {
                     </div>
                 </section>
 
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24 mb-16">
+                    <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
+                    <h2 className="text-white uppercase tracking-tight">
+                        <span className="block text-4xl sm:text-5xl lg:text-6xl">
+                            Club
+                        </span>
+                        <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
+                            Committee
+                        </span>
+                    </h2>
+                </div>
+
                 {featured &&
                     (() => {
                         const { firstName, lastName } = formatName(featured.name);
