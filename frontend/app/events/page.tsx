@@ -12,6 +12,7 @@ import {
     Loader2,
     AlertCircle,
     Newspaper,
+    Coins,
 } from "lucide-react";
 
 type EventType = {
@@ -49,6 +50,18 @@ function getTypeColor(type: string) {
                 text: "text-white",
                 border: "border-gray-800",
             };
+        case "Fundraising":
+            return {
+                bg: "bg-green-900",
+                text: "text-white",
+                border: "border-green-900",
+            };
+        case "Other":
+            return {
+                bg: "bg-gray-600",
+                text: "text-white",
+                border: "border-gray-600",
+            };
         default:
             return {
                 bg: "bg-red-500",
@@ -79,6 +92,8 @@ function parseIsoToDayMonth(iso?: string) {
 function iconForType(type: string) {
     if (type === "Social") return PartyPopper;
     if (type === "Recruitment") return Users;
+    if (type === "Fundraising") return Coins;
+    if (type === "Other") return Calendar;
     return Trophy;
 }
 
@@ -367,7 +382,7 @@ export default function EventsPage() {
 
                             {/* Filter Controls */}
                             <div className="flex flex-wrap gap-4 mb-12">
-                                {["All", "Competition", "Social", "Recruitment"].map((f) => (
+                                {["All", "Competition", "Social", "Recruitment", "Fundraising", "Other"].map((f) => (
                                     <button
                                         key={f}
                                         onClick={() => setFilter(f)}
@@ -412,7 +427,7 @@ export default function EventsPage() {
                                                             <div className="flex-shrink-0">
                                                                 {event.multiDay ? (
                                                                     <div
-                                                                        className={`${colors.bg} ${colors.text} px-6 py-4 flex items-center gap-4 group-hover:scale-105 transition-transform duration-300`}
+                                                                        className={`text-[#ffdc36] px-6 py-4 flex items-center gap-4 group-hover:scale-105 transition-transform duration-300`}
                                                                     >
                                                                         <div className="text-center">
                                                                             <div className="text-3xl uppercase tracking-tight leading-none mb-1">
@@ -450,7 +465,7 @@ export default function EventsPage() {
                                                                     </div>
                                                                 ) : (
                                                                     <div
-                                                                        className={`${colors.bg} ${colors.text} w-32 h-32 flex flex-col items-center justify-center group-hover:scale-110 transition-transform duration-300`}
+                                                                        className={`text-[#ffdc36] w-32 h-32 flex flex-col items-center justify-center group-hover:scale-110 transition-transform duration-300`}
                                                                     >
                                                                         <Icon size={32} className="mb-2" />
                                                                         <div className="text-3xl uppercase tracking-tight leading-none mb-1">

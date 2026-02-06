@@ -35,7 +35,8 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/auth/**").permitAll()
+                    .requestMatchers("/auth/login").permitAll()
+                    .requestMatchers("/auth/verify").authenticated()
                     .requestMatchers("/api/committee").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/news", "/api/news/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/**").permitAll()

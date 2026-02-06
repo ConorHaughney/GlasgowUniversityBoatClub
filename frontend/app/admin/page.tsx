@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { Loader2 } from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8080";
 
@@ -12,6 +13,32 @@ export default function AdminLoginPage() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
+    const [verifying, setVerifying] = useState(true);
+
+    useEffect(() => {
+        const verifyToken = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setVerifying(false);
+                return;
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/auth/verify`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (res.ok) {
+                    router.push("/admin/dashboard");
+                } else {
+                    localStorage.removeItem("token");
+                    setVerifying(false);
+                }
+            } catch {
+                setVerifying(false);
+            }
+        };
+        verifyToken();
+    }, [router]);
 
     const onSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -38,6 +65,14 @@ export default function AdminLoginPage() {
             setLoading(false);
         }
     };
+
+    if (verifying) {
+        return (
+            <div className="min-h-screen bg-black text-white flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-[#ffdc36]" />
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen bg-black text-white flex items-center justify-center px-4 pt-24">
