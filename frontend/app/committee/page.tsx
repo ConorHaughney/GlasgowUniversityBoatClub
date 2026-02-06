@@ -137,7 +137,7 @@ export default async function Committee() {
                             <div className="mt-10 mb-16">
                                 <div className="group bg-white hover:shadow-2xl transition-all duration-300 border-l-4 border-[#c4a522] hover:border-[#ffdc36] overflow-hidden max-w-5xl mx-auto">
                                     <div className="grid md:grid-cols-2 gap-10">
-                                        <div className="overflow-hidden relative">
+                                        <div className="overflow-hidden relative aspect-square md:aspect-auto md:h-auto">
                                             <ImageWithFallback
                                                 src={
                                                     featured.image_url && featured.image_url.trim()
@@ -149,7 +149,7 @@ export default async function Committee() {
                                                 className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
                                             />
                                         </div>
-                                        <div className="p-10 flex flex-col justify-center">
+                                        <div className="p-8 md:p-10 flex flex-col justify-center">
                                             <div className="mb-8">
                                                 <h3 className="text-black text-4xl uppercase tracking-wide mb-4">
                                                     {firstName}
@@ -277,7 +277,7 @@ export default async function Committee() {
                     })}
                 </div>
 
-                <div className={`grid md:grid-cols-${lastThree.length > 2 ? '3' : '2'} gap-8 max-w-5xl mx-auto mb-8 justify-center`}>
+                <div className={`grid md:grid-cols-2 ${lastThree.length > 2 ? 'lg:grid-cols-3' : ''} gap-8 max-w-5xl mx-auto mb-8`}>
                     {lastThree.map((member) => {
                         const { firstName, lastName } = formatName(member.name);
                         return (
