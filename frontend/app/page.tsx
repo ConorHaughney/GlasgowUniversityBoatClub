@@ -12,12 +12,14 @@ export default function Home() {
                     muted
                     loop
                     playsInline
+                    preload="auto"
+                    poster="/hero-poster.jpg"
                     className="absolute inset-0 w-full h-full object-cover"
                 >
                     <source src="/videos/rowing-hero.mp4" type="video/mp4" />
                     Your browser does not support the video tag.
                 </video>
-                <div className="absolute inset-0 bg-gradient-to-b from-black/90 via-black/80 to-black/70"></div>
+                <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/70 to-black/60"></div>
                 {/* Diagonal yellow accent */}
                 <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-r from-[#ffdc36] to-[#ffd303] transform origin-bottom-left skew-y-2"></div>
             </div>
