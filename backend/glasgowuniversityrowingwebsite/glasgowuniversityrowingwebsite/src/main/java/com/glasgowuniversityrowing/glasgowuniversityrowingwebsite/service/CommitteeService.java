@@ -1,6 +1,7 @@
 package com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.service;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -41,7 +42,7 @@ public class CommitteeService {
 
     public PhotoResponse uploadPhoto(Long id, MultipartFile file) {
         CommitteeMember m = repo.findById(id).orElseThrow();
-        String key = id + "-" + file.getOriginalFilename();
+        String key = id + "-" + UUID.randomUUID() + "-" + file.getOriginalFilename();
         String publicUrl = storageService.uploadPublic(key, file);
         m.setImageUrl(publicUrl);
         repo.save(m);
