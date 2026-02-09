@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -37,6 +39,7 @@ public class SecurityConfiguration {
                 .csrf(csrf -> csrf.disable())
                 .formLogin(AbstractHttpConfigurer::disable)
                 .httpBasic(AbstractHttpConfigurer::disable)
+                .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers("/auth/login").permitAll()
@@ -49,6 +52,7 @@ public class SecurityConfiguration {
                     .requestMatchers("/api/mailing-list/**").permitAll()
                     .requestMatchers("/api/checkout").permitAll()
                     .requestMatchers("/api/webhooks/**").permitAll()
+                    .requestMatchers("/error").permitAll()
                     .anyRequest().authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
@@ -61,7 +65,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("https://www.glasgowuniversityrowing.co.uk", "https://glasgowuniversityrowing.co.uk", "http://localhost:3000", "http://127.0.0.1:3000"));
+        configuration.setAllowedOriginPatterns(List.of("https://www.glasgowuniversityrowing.co.uk", "https://glasgowuniversityrowing.co.uk", "http://localhost:3000", "http://127.0.0.1:3000", "https://gubc-backend.onrender.com"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(
                 List.of("Authorization", "Content-Type", "Accept", "Origin", "Cache-Control", "Pragma"));
