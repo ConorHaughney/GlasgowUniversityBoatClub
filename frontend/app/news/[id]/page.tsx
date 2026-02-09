@@ -109,7 +109,7 @@ export default async function NewsArticle(props: PageProps) {
                         {/* Article body */}
                         <article className="bg-white text-black p-8 md:p-12 border-l-4 border-[#c4a522]">
                             <div
-                                className="prose prose-lg max-w-none
+                                className="prose prose-lg max-w-none whitespace-pre-line
                 prose-headings:uppercase prose-headings:tracking-wide prose-headings:text-black
                 prose-p:text-gray-800 prose-p:leading-relaxed prose-p:mb-6
                 prose-a:text-[#c4a522] prose-a:no-underline hover:prose-a:underline

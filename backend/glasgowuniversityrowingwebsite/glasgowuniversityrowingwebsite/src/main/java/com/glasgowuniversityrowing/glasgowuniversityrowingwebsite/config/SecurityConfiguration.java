@@ -35,13 +35,14 @@ public class SecurityConfiguration {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(authorize -> authorize
+                    .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                     .requestMatchers("/auth/login").permitAll()
                     .requestMatchers("/auth/verify").authenticated()
-                    .requestMatchers("/api/committee").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/api/committee").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/news", "/api/news/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/merch").permitAll()
-                    .requestMatchers("/committee/**").permitAll()
+                    .requestMatchers(HttpMethod.GET, "/committee/**").permitAll()
                     .requestMatchers("/api/mailing-list/**").permitAll()
                     .requestMatchers("/api/checkout").permitAll()
                     .requestMatchers("/api/webhooks/**").permitAll()
@@ -57,7 +58,7 @@ public class SecurityConfiguration {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOriginPatterns(List.of("*"));
+        configuration.setAllowedOriginPatterns(List.of("https://www.glasgowuniversityrowing.co.uk", "https://glasgowuniversityrowing.co.uk", "http://localhost:3000", "http://127.0.0.1:3000"));
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(
                 List.of("Authorization", "Content-Type", "Accept", "Origin", "Cache-Control", "Pragma"));

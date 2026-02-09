@@ -221,19 +221,18 @@ export default function OurHistoryPage() {
                         <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-sm hover:border-[#ffdc36]/30 transition-all group">
                             <div className="mb-6 overflow-hidden rounded-sm">
                                 <ImagePlaceholder
-                                    label="Dame Katherine Grainger"
+                                    label="Laura McKenzie"
                                     height="h-48"
                                 />
                             </div>
                             <h3 className="text-xl font-bold text-white">
-                                Dame Katherine Grainger
+                                Laura McKenzie
                             </h3>
                             <p className="text-[#ffdc36] text-xs uppercase tracking-wider mt-1 mb-3">
-                                Olympic Gold Medallist
+                                British Beach Sprinter
                             </p>
                             <p className="text-zinc-400 text-sm">
-                                Britain’s most decorated female Olympian and current University
-                                Chancellor. A true legend of the sport.
+                                Studied Engineering at Glasgow while competing for GUBC. Transitioned to Beach Sprints, winning Gold for Scotland at the 2022 Commonwealth Beach Sprints and Silver at the 2023 World Championships. Currently pursuing a PhD at the University.
                             </p>
                         </div>
 

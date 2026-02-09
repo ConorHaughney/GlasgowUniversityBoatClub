@@ -129,7 +129,7 @@ export default function JoinPage() {
                                 </p>
                                 <div className="flex flex-col items-center justify-center gap-6">
                                     <a
-                                        href="https://www.gla.ac.uk/study/"
+                                        href="https://www.ucas.com/explore/unis/e4c66810/university-of-glasgow?studyYear=2026"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium text-black bg-[#ffdc36] hover:bg-white transition duration-300 shadow-lg uppercase tracking-wider"
