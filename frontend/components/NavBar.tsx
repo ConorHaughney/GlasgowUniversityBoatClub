@@ -15,7 +15,7 @@ export default function NavBar() {
         { href: '/committee', label: 'Committee' },
         { href: '/news', label: 'News' },
         { href: '/events', label: 'Events' },
-        { href: '/merch', label: 'Merch' },
+        // { href: '/merch', label: 'Merch' },
         { href: '/our-history', label: 'Our History' },
         { href: '/alumni', label: 'Alumni' },
     ];

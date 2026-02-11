@@ -146,7 +146,7 @@ export default async function Committee() {
                                                 }
                                                 alt={featured.name}
                                                 fill
-                                                className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
+                                                className="object-cover md:grayscale-[80%] group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
                                             />
                                         </div>
                                         <div className="p-8 md:p-10 flex flex-col justify-center">
@@ -196,7 +196,7 @@ export default async function Committee() {
                                         }
                                         alt={member.name}
                                         fill
-                                        className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
+                                        className="object-cover md:grayscale-[80%] group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
                                     />
                                 </div>
                                 <div className="p-8 md:p-10">
@@ -245,7 +245,7 @@ export default async function Committee() {
                                         }
                                         alt={member.name}
                                         fill
-                                        className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
+                                        className="object-cover md:grayscale-[80%] group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
                                     />
                                 </div>
                                 <div className="p-6 md:p-8">
@@ -294,7 +294,7 @@ export default async function Committee() {
                                         }
                                         alt={member.name}
                                         fill
-                                        className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
+                                        className="object-cover md:grayscale-[80%] group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
                                     />
                                 </div>
                                 <div className="p-6 md:p-7">
@@ -343,7 +343,7 @@ export default async function Committee() {
                                         }
                                         alt={member.name}
                                         fill
-                                        className="object-cover grayscale group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
+                                        className="object-cover md:grayscale-[80%] group-hover:grayscale-0 transition-all duration-500 group-hover:scale-105"
                                     />
                                 </div>
                                 <div className="p-6 md:p-7">

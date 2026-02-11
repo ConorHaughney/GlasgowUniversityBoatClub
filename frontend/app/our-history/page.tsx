@@ -1,4 +1,6 @@
 import React from "react";
+import Image from "next/image";
+import NewsletterCTA from "@/components/NewsletterCTA";
 
 // Reusable Image Placeholder Component
 const ImagePlaceholder = ({
@@ -80,9 +82,9 @@ export default function OurHistoryPage() {
     ];
 
     return (
-        <section id="our-history" className="bg-gray-1000 mt-20 bg-zinc-950 pb-20">
+        <section id="our-history" className="bg-gray-1000 mt-20 overflow-hidden">
             <div className="mx-auto px-6 sm:px-8 lg:px-10">
-                {/* Hero Section - DO NOT CHANGE */}
+                {/* Hero Section */}
                 <section className="relative py-24 bg-black text-white overflow-hidden">
                     <div className="absolute top-5 right-5 text-white/5 text-[15rem] uppercase tracking-tight leading-none pointer-events-none">
                         History
@@ -106,167 +108,219 @@ export default function OurHistoryPage() {
                     </div>
                 </section>
 
-                {/* Introduction Grid */}
-                <div className="max-w-7xl mx-auto py-20 border-b border-zinc-800">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-                        <div className="space-y-6 text-lg text-zinc-400 leading-relaxed">
-                            <p>
-                                <span className="text-white font-semibold">
-                                    Founded in 1867,
-                                </span>{" "}
-                                Glasgow University Boat Club (GUBC) stands as a pillar of
-                                Scottish sporting tradition. For over 150 years, the
-                                &ldquo;Black and Gold&rdquo; has represented the University on
-                                waters across the globe, from the River Clyde to the tideway of
-                                London.
-                            </p>
-                            <p>
-                                Originally established as a male-only society, the club
-                                underwent a transformation in
-                                <span className="text-[#ffdc36]"> 2004</span> by merging with
-                                the University Ladies Boat Club. This union created one of the
-                                largest and most competitive mixed-gender sports clubs in the
-                                country, fostering talent from complete novices to World
-                                Champions.
-                            </p>
-                        </div>
-                        <div className="w-full">
-                            <ImagePlaceholder
-                                label="Archival Photo: The 1924 Crew"
-                                height="h-80"
-                            />
-                            <p className="text-zinc-600 text-xs mt-2 font-mono text-right">
-                                Circa 1924: The opening of the East Boathouse
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                {/* The Scottish Boat Race Section */}
-                <div className="max-w-7xl mx-auto py-24">
-                    <div className="flex flex-col md:flex-row gap-12">
-                        <div className="md:w-1/2 order-2 md:order-1">
-                            <ImagePlaceholder
-                                label="Action Shot: The Scottish Boat Race"
-                                height="h-full min-h-[400px]"
-                            />
-                        </div>
-                        <div className="md:w-1/2 order-1 md:order-2 flex flex-col justify-center">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="h-px w-12 bg-[#ffdc36]"></div>
-                                <span className="text-[#ffdc36] uppercase tracking-widest font-bold text-sm">
-                                    Since 1877
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 space-y-24">
+                    {/* Introduction Grid */}
+                    <div>
+                        <div className="mb-16">
+                            <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
+                            <h2 className="text-white uppercase tracking-tight">
+                                <span className="block text-4xl sm:text-5xl lg:text-6xl">
+                                    A Legacy of
                                 </span>
-                            </div>
-                            <h2 className="text-4xl font-bold text-white mb-6 uppercase">
-                                The Scottish Boat Race
+                                <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
+                                    Excellence
+                                </span>
                             </h2>
-                            <p className="text-zinc-400 mb-6 leading-relaxed">
-                                Older even than the Celtic–Rangers rivalry, our annual contest
-                                against the University of Edinburgh is the{" "}
-                                <span className="text-white">
-                                    third-oldest varsity boat race in the world
-                                </span>
-                                , behind only Oxford–Cambridge and Harvard–Yale.
-                            </p>
-                            <p className="text-zinc-400 leading-relaxed">
-                                The race has evolved from coxed fours in the 19th century to the
-                                powerful eights of today. A particular point of pride remains
-                                the Men&apos;s 1st VIII &ldquo;Golden Era,&ldquo; where GUBC held the trophy for{" "}
-                                <span className="text-white">13 consecutive years</span> between
-                                2000 and 2012.
-                            </p>
                         </div>
-                    </div>
-                </div>
-
-                {/* Timeline Section */}
-                <div className="max-w-4xl mx-auto py-20">
-                    <h2 className="text-3xl font-bold text-white mb-16 text-center uppercase tracking-tight">
-                        Timeline of <span className="text-[#ffdc36]">Events</span>
-                    </h2>
-                    <div className="border-l-2 border-zinc-800 ml-4 space-y-16">
-                        {milestones.map((item, index) => (
-                            <div key={index} className="relative pl-12 group">
-                                <span className="absolute -left-[9px] top-2 h-4 w-4 rounded-full border-2 border-[#ffdc36] bg-black group-hover:bg-[#ffdc36] transition-colors duration-300"></span>
-                                <span className="text-[#ffdc36] font-mono text-sm tracking-widest uppercase mb-1 block">
-                                    {item.year}
-                                </span>
-                                <h3 className="text-2xl font-bold text-white mb-3">
-                                    {item.title}
-                                </h3>
-                                <p className="text-zinc-500 leading-relaxed">
-                                    {item.description}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                            <div className="space-y-6 text-lg text-zinc-400 leading-relaxed">
+                                <p>
+                                    <span className="text-white font-semibold">
+                                        Founded in 1867,
+                                    </span>{" "}
+                                    Glasgow University Boat Club (GUBC) stands as a pillar of
+                                    Scottish sporting tradition. For over 150 years, the
+                                    &ldquo;Black and Gold&rdquo; has represented the University on
+                                    waters across the globe, from the River Clyde to the tideway of
+                                    London.
+                                </p>
+                                <p>
+                                    Originally established as a male-only society, the club
+                                    underwent a transformation in
+                                    <span className="text-[#ffdc36]"> 2004</span> by merging with
+                                    the University Ladies Boat Club. This union created one of the
+                                    largest and most competitive mixed-gender sports clubs in the
+                                    country, fostering talent from complete novices to World
+                                    Champions.
                                 </p>
                             </div>
-                        ))}
+                            <div className="w-full">
+                                <div className="relative w-full h-80 rounded-sm overflow-hidden border border-zinc-800 group">
+                                    <Image
+                                        src="https://nfinlwbvbsoonbxqflvh.supabase.co/storage/v1/object/public/site_images/7DB6E0AEFC3D4415BBF00D820A6B07F2.jpg"
+                                        alt="Archival Photo"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                                <p className="text-zinc-600 text-xs mt-2 font-mono text-right">
+                                    Archival Photo
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                {/* Notable Alumni / Hall of Fame */}
-                <div className="border-t border-zinc-800 pt-20 pb-10 max-w-7xl mx-auto">
-                    <div className="flex flex-col md:flex-row justify-between items-end mb-12">
-                        <div>
-                            <h2 className="text-3xl font-bold text-white uppercase tracking-tight">
-                                Hall of <span className="text-[#ffdc36]">Fame</span>
+                    {/* The Scottish Boat Race Section */}
+                    <div>
+                        <div className="mb-16">
+                            <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
+                            <h2 className="text-white uppercase tracking-tight">
+                                <span className="block text-4xl sm:text-5xl lg:text-6xl">
+                                    The Scottish
+                                </span>
+                                <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
+                                    Boat Race
+                                </span>
                             </h2>
-                            <p className="text-zinc-500 mt-2">
-                                From the Clyde to the World Stage.
-                            </p>
+                        </div>
+                        <div className="flex flex-col md:flex-row gap-12">
+                            <div className="md:w-1/2 order-2 md:order-1">
+                                <div className="relative w-full h-full min-h-[400px] rounded-sm overflow-hidden border border-zinc-800 group">
+                                    <Image
+                                        src="https://nfinlwbvbsoonbxqflvh.supabase.co/storage/v1/object/public/site_images/boatRace.jpeg"
+                                        alt="Action Shot: The Scottish Boat Race"
+                                        fill
+                                        className="object-cover"
+                                    />
+                                </div>
+                            </div>
+                            <div className="md:w-1/2 order-1 md:order-2 flex flex-col justify-center">
+                                <p className="text-zinc-400 mb-6 leading-relaxed text-lg">
+                                    Our annual contest
+                                    against the University of Edinburgh is the{" "}
+                                    <span className="text-white">
+                                        third-oldest varsity boat race in the world
+                                    </span>
+                                    , behind only Oxford–Cambridge and Harvard–Yale.
+                                </p>
+                                <p className="text-zinc-400 leading-relaxed text-lg">
+                                    The race has evolved from coxed fours in the 19th century to the
+                                    powerful eights of today. A particular point of pride remains
+                                    the Men&apos;s 1st VIII &ldquo;Golden Era,&ldquo; where GUBC held the trophy for{" "}
+                                    <span className="text-white">13 consecutive years</span> between
+                                    2000 and 2012.
+                                </p>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        {/* Alumni 1 */}
-                        <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-sm hover:border-[#ffdc36]/30 transition-all group">
-                            <div className="mb-6 overflow-hidden rounded-sm">
-                                <ImagePlaceholder
-                                    label="Laura McKenzie"
-                                    height="h-48"
-                                />
+                    {/* Timeline Section */}
+                    <div>
+                        <div className="mb-16">
+                            <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
+                            <h2 className="text-white uppercase tracking-tight">
+                                <span className="block text-4xl sm:text-5xl lg:text-6xl">
+                                    Timeline of
+                                </span>
+                                <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
+                                    Events
+                                </span>
+                            </h2>
+                        </div>
+                        <div className="max-w-4xl mx-auto">
+                            <div className="border-l-2 border-zinc-800 ml-4 space-y-16">
+                                {milestones.map((item, index) => (
+                                    <div key={index} className="relative pl-12 group">
+                                        <span className="absolute -left-[9px] top-2 h-4 w-4 rounded-full border-2 border-[#ffdc36] bg-black group-hover:bg-[#ffdc36] transition-colors duration-300"></span>
+                                        <span className="text-[#ffdc36] font-mono text-sm tracking-widest uppercase mb-1 block">
+                                            {item.year}
+                                        </span>
+                                        <h3 className="text-2xl font-bold text-white mb-3">
+                                            {item.title}
+                                        </h3>
+                                        <p className="text-zinc-500 leading-relaxed">
+                                            {item.description}
+                                        </p>
+                                    </div>
+                                ))}
                             </div>
-                            <h3 className="text-xl font-bold text-white">
-                                Laura McKenzie
-                            </h3>
-                            <p className="text-[#ffdc36] text-xs uppercase tracking-wider mt-1 mb-3">
-                                British Beach Sprinter
-                            </p>
-                            <p className="text-zinc-400 text-sm">
-                                Studied Engineering at Glasgow while competing for GUBC. Transitioned to Beach Sprints, winning Gold for Scotland at the 2022 Commonwealth Beach Sprints and Silver at the 2023 World Championships. Currently pursuing a PhD at the University.
-                            </p>
+                        </div>
+                    </div>
+
+                    {/* Notable Alumni / Hall of Fame */}
+                    <div>
+                        <div className="mb-16">
+                            <div className="h-1 w-20 bg-[#ffdc36] mb-6"></div>
+                            <h2 className="text-white uppercase tracking-tight">
+                                <span className="block text-4xl sm:text-5xl lg:text-6xl">
+                                    Hall of
+                                </span>
+                                <span className="block text-4xl sm:text-5xl lg:text-6xl text-[#ffdc36]">
+                                    Fame
+                                </span>
+                            </h2>
                         </div>
 
-                        {/* Alumni 2 */}
-                        <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-sm hover:border-[#ffdc36]/30 transition-all group">
-                            <div className="mb-6 overflow-hidden rounded-sm">
-                                <ImagePlaceholder label="Imogen Walsh" height="h-48" />
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {/* Alumni 1 */}
+                            <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-sm hover:border-[#ffdc36]/30 transition-all group">
+                                <div className="mb-6 overflow-hidden rounded-sm">
+                                    <div className="relative w-full h-96 rounded-sm overflow-hidden border border-zinc-800 group">
+                                        <Image
+                                            src="https://nfinlwbvbsoonbxqflvh.supabase.co/storage/v1/object/public/site_images/lauraM.jpg"
+                                            alt="Laura McKenzie"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                </div>
+                                <h3 className="text-xl font-bold text-white">
+                                    Laura McKenzie
+                                </h3>
+                                <p className="text-[#ffdc36] text-xs uppercase tracking-wider mt-1 mb-3">
+                                    British Beach Sprinter
+                                </p>
+                                <p className="text-zinc-400 text-sm">
+                                    Studied Engineering at Glasgow while competing for GUBC. Transitioned to Beach Sprints, winning Gold for Scotland at the 2022 Commonwealth Beach Sprints and Silver at the 2023 World Championships. Currently pursuing a PhD at the University.
+                                </p>
                             </div>
-                            <h3 className="text-xl font-bold text-white">Imogen Walsh</h3>
-                            <p className="text-[#ffdc36] text-xs uppercase tracking-wider mt-1 mb-3">
-                                World Champion
-                            </p>
-                            <p className="text-zinc-400 text-sm">
-                                Learnt to row at Glasgow before going on to become a multi-time
-                                World Champion in the lightweight category.
-                            </p>
-                        </div>
 
-                        {/* Alumni 3 */}
-                        <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-sm hover:border-[#ffdc36]/30 transition-all group">
-                            <div className="mb-6 overflow-hidden rounded-sm">
-                                <ImagePlaceholder label="Miriam Payne" height="h-48" />
+                            {/* Alumni 2 */}
+                            <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-sm hover:border-[#ffdc36]/30 transition-all group">
+                                <div className="mb-6 overflow-hidden rounded-sm">
+                                    <div className="relative w-full h-96 rounded-sm overflow-hidden border border-zinc-800 group">
+                                        <Image
+                                            src="https://nfinlwbvbsoonbxqflvh.supabase.co/storage/v1/object/public/site_images/Imogen-Walsh-Media-Shirt.jpg"
+                                            alt="Imogen Walsh"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Imogen Walsh</h3>
+                                <p className="text-[#ffdc36] text-xs uppercase tracking-wider mt-1 mb-3">
+                                    World Champion
+                                </p>
+                                <p className="text-zinc-400 text-sm">
+                                    Learned to row at GUBC and went on to become a
+                                    two time gold medalist at the World Championship in
+                                    the lightweight quad and silver medalist in the lightweight single
+                                </p>
                             </div>
-                            <h3 className="text-xl font-bold text-white">Miriam Payne</h3>
-                            <p className="text-[#ffdc36] text-xs uppercase tracking-wider mt-1 mb-3">
-                                Atlantic Rower
-                            </p>
-                            <p className="text-zinc-400 text-sm">
-                                Set a record for the &ldquo;World&apos;s Toughest Row,&ldquo; crossing the
-                                Atlantic Ocean solo in 59 days in 2023.
-                            </p>
+
+                            {/* Alumni 3 */}
+                            <div className="bg-zinc-900/30 border border-zinc-800 p-6 rounded-sm hover:border-[#ffdc36]/30 transition-all group">
+                                <div className="mb-6 overflow-hidden rounded-sm">
+                                    <div className="relative w-full h-96 rounded-sm overflow-hidden border border-zinc-800 group">
+                                        <Image
+                                            src="https://nfinlwbvbsoonbxqflvh.supabase.co/storage/v1/object/public/site_images/Miriam_Payne.jpg"
+                                            alt="Miriam Payne"
+                                            fill
+                                            className="object-cover"
+                                        />
+                                    </div>
+                                </div>
+                                <h3 className="text-xl font-bold text-white">Miriam Payne</h3>
+                                <p className="text-[#ffdc36] text-xs uppercase tracking-wider mt-1 mb-3">
+                                    Atlantic Rower
+                                </p>
+                                <p className="text-zinc-400 text-sm">
+                                    Miriam Payne competed for GUBC and served as Women’s Captain while studying Physics and Astrophysics at Glasgow. In 2021, she set the world record for the fastest solo female Atlantic crossing and recently completed a historic 165-day unsupported row across the Pacific from South America to Australia in the first all-female crew to do so.                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
+                <NewsletterCTA />
             </div>
         </section>
     );
