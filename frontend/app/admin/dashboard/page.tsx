@@ -1294,6 +1294,8 @@ export default function AdminDashboard() {
                                         <option value="Competition">Competition</option>
                                         <option value="Social">Social</option>
                                         <option value="Recruitment">Recruitment</option>
+                                        <option value="Fundraising">Fundraising</option>
+                                        <option value="Alumni">Alumni</option>
                                     </select>
                                 </div>
                                 <div>
