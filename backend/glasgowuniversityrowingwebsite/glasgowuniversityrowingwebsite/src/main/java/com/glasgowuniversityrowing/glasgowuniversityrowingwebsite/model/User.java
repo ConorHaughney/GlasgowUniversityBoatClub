@@ -1,7 +1,10 @@
 package com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.model;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -34,6 +37,12 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String role = "ADMIN";
 
+    @Column(name = "permissions_csv", length = 1000)
+    private String permissionsCsv;
+
+    @Column(name = "permissions_override_enabled", nullable = false)
+    private boolean permissionsOverrideEnabled = false;
+
     // Constructor for creating a user
     public User(String email, String password) {
         this.email = email;
@@ -47,7 +56,31 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role));
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + role));
+
+        getPermissionSet().forEach(permission -> authorities.add(new SimpleGrantedAuthority(permission)));
+        return List.copyOf(authorities);
+    }
+
+    public Set<String> getPermissionSet() {
+        if (permissionsCsv == null || permissionsCsv.isBlank()) {
+            return Set.of();
+        }
+
+        return List.of(permissionsCsv.split(",")).stream()
+                .map(String::trim)
+                .filter(permission -> !permission.isBlank())
+                .collect(Collectors.toSet());
+    }
+
+    public void setPermissionSet(Set<String> permissions) {
+        if (permissions == null || permissions.isEmpty()) {
+            this.permissionsCsv = null;
+            return;
+        }
+
+        this.permissionsCsv = permissions.stream().sorted().collect(Collectors.joining(","));
     }
 
     @Override

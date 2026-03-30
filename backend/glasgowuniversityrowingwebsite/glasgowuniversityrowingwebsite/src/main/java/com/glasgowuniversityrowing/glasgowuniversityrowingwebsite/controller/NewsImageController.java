@@ -2,6 +2,7 @@ package com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.controller;
 
 import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.service.StorageService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,11 +22,12 @@ public class NewsImageController {
     }
 
     @PostMapping("/image")
+    @PreAuthorize("hasAuthority('NEWS_MANAGE')")
     public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
         try {
             String imageUrl = storageService.uploadNewsImage(file);
             return ResponseEntity.ok(imageUrl);
-        } catch (Exception e) {
+        } catch (IOException | RuntimeException e) {
             return ResponseEntity.internalServerError().body("Failed to upload image: " + e.getMessage());
         }
     }

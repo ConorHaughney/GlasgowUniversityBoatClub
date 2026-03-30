@@ -40,20 +40,20 @@ public class EventsController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('EVENTS_MANAGE')")
     public ResponseEntity<EventsDto> create(@Valid @RequestBody EventsDto dto) {
         EventsDto created = service.create(dto);
         return ResponseEntity.created(URI.create("/api/events/" + created.getId())).body(created);
     }
 
     @PutMapping("/{eventId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('EVENTS_MANAGE')")
     public ResponseEntity<EventsDto> update(@PathVariable("eventId") Long eventId, @Valid @RequestBody EventsDto dto) {
         return service.update(eventId, dto).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{eventId}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('EVENTS_MANAGE')")
     public ResponseEntity<Void> delete(@PathVariable("eventId") Long eventId) {
         return service.delete(eventId) ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
     }

@@ -21,14 +21,14 @@ public class CommitteeController {
     }
 
     @PutMapping("/admin/committee")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('COMMITTEE_MANAGE')")
     public ResponseEntity<Void> update(@RequestBody UpdateRequest req) {
         service.updateMembers(req);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/admin/committee/photo")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('COMMITTEE_MANAGE')")
     public ResponseEntity<PhotoResponse> upload(
             @RequestParam("id") Long id,
             @RequestParam("file") MultipartFile file) throws Exception {

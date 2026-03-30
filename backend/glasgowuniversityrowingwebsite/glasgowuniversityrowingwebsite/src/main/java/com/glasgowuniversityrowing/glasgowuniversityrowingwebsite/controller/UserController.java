@@ -1,15 +1,20 @@
 package com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.dto.UpdateUserPermissionsDto;
 import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.model.User;
 import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.service.UserService;
 
@@ -29,9 +34,21 @@ public class UserController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('USER_ADMIN')")
     public ResponseEntity<List<User>> allUsers() {
         List <User> users = userService.allUsers();
         return ResponseEntity.ok(users);
+    }
+
+    @PutMapping("/{id}/permissions")
+    @PreAuthorize("hasAuthority('USER_ADMIN')")
+    public ResponseEntity<Map<String, Object>> updatePermissions(
+            @PathVariable Long id,
+            @RequestBody UpdateUserPermissionsDto request) {
+        User updated = userService.updatePermissionOverride(id, request.isOverrideEnabled(), request.getPermissions());
+        return ResponseEntity.ok(Map.of(
+                "id", updated.getId(),
+                "overrideEnabled", updated.isPermissionsOverrideEnabled(),
+                "permissions", updated.getPermissionSet()));
     }
 }

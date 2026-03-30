@@ -24,13 +24,13 @@ public class MerchItemController {
     }
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('MERCH_MANAGE')")
     public MerchItem create(@RequestBody MerchItem item) {
         return repo.save(item);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('MERCH_MANAGE')")
     public ResponseEntity<MerchItem> update(@PathVariable Long id, @RequestBody MerchItem item) {
         return repo.findById(id)
             .map(existing -> {
@@ -44,7 +44,7 @@ public class MerchItemController {
     }
 
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('MERCH_MANAGE')")
     public void delete(@PathVariable Long id) {
         repo.deleteById(id);
     }

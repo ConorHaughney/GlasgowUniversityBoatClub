@@ -13,14 +13,17 @@ import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.repository.Use
 public class AuthenticationService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
+        private final PermissionService permissionService;
 
     public AuthenticationService(
             UserRepository userRepository,
             AuthenticationManager authenticationManager,
-            PasswordEncoder passwordEncoder
+                        PasswordEncoder passwordEncoder,
+                        PermissionService permissionService
     ) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+                this.permissionService = permissionService;
     }
 
     public User authenticate(LoginUserDto input) {
@@ -34,6 +37,6 @@ public class AuthenticationService {
                 )
         );
 
-        return user;
+                return permissionService.syncDefaultPermissions(user);
     }
 }

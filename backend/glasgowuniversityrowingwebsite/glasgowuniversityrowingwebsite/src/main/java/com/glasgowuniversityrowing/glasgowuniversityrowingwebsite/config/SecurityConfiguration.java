@@ -10,6 +10,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,6 +29,7 @@ import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.repository.Use
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfiguration {
 
     @Bean
@@ -42,8 +44,11 @@ public class SecurityConfiguration {
                 .exceptionHandling(e -> e.authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                    .requestMatchers("/auth/login").permitAll()
-                    .requestMatchers("/auth/verify").authenticated()
+                    .requestMatchers("/auth/login", "/api/auth/login").permitAll()
+                    .requestMatchers("/auth/forgot-password", "/api/auth/forgot-password").permitAll()
+                    .requestMatchers("/auth/reset-password", "/api/auth/reset-password").permitAll()
+                    .requestMatchers("/auth/validate-token/**", "/api/auth/validate-token/**").permitAll()
+                    .requestMatchers("/auth/verify", "/api/auth/verify").authenticated()
                     .requestMatchers(HttpMethod.GET, "/api/committee").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/news", "/api/news/**").permitAll()
                     .requestMatchers(HttpMethod.GET, "/api/events", "/api/events/**").permitAll()

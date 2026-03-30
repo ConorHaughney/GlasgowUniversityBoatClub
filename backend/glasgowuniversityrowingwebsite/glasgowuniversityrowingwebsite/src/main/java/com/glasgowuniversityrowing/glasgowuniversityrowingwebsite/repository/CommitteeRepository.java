@@ -11,5 +11,6 @@ import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.model.Committe
 @Repository
 public interface CommitteeRepository extends JpaRepository<CommitteeMember, Long> {
     Optional<CommitteeMember> findByRole(String role);
+    Optional<CommitteeMember> findByEmailIgnoreCase(String email);
     List<CommitteeMember> findAllByOrderByOrderAsc();
 }

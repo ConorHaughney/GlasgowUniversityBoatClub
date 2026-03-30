@@ -59,8 +59,8 @@ function BioList({ bio }: { bio: string }) {
         <dl className="space-y-2 text-gray-700">
             {keys.map((key) => (
                 <div key={key}>
-                    <dt className="font-semibold inline">{key}:</dt>{" "}
-                    <dd className="inline">{fields[key]}</dd>
+                    <dt className="font-semibold inline">{key}:</dt>
+                    <dd className="inline ml-1">{fields[key]}</dd>
                 </div>
             ))}
         </dl>
@@ -137,7 +137,7 @@ export default async function Committee() {
                             <div className="mt-10 mb-16">
                                 <div className="group bg-white hover:shadow-2xl transition-all duration-300 border-l-4 border-[#c4a522] hover:border-[#ffdc36] overflow-hidden max-w-5xl mx-auto">
                                     <div className="grid md:grid-cols-2 gap-10">
-                                        <div className="overflow-hidden relative aspect-square md:aspect-auto md:h-auto">
+                                        <div className="overflow-hidden relative aspect-[4/5]">
                                             <ImageWithFallback
                                                 src={
                                                     featured.image_url && featured.image_url.trim()
@@ -187,7 +187,7 @@ export default async function Committee() {
                                 key={member.id}
                                 className="group bg-white hover:shadow-2xl transition-all duration-300 border-l-4 border-[#c4a522] hover:border-[#ffdc36] overflow-hidden"
                             >
-                                <div className="aspect-square overflow-hidden relative">
+                                <div className="aspect-[4/5] overflow-hidden relative">
                                     <ImageWithFallback
                                         src={
                                             member.image_url && member.image_url.trim()
@@ -236,7 +236,7 @@ export default async function Committee() {
                                 key={member.id}
                                 className="group bg-white hover:shadow-2xl transition-all duration-300 border-l-4 border-[#c4a522] hover:border-[#ffdc36] overflow-hidden"
                             >
-                                <div className="aspect-square overflow-hidden relative">
+                                <div className="aspect-[4/5] overflow-hidden relative">
                                     <ImageWithFallback
                                         src={
                                             member.image_url && member.image_url.trim()
@@ -285,7 +285,7 @@ export default async function Committee() {
                                 key={member.id}
                                 className="group bg-white hover:shadow-2xl transition-all duration-300 border-l-4 border-[#c4a522] hover:border-[#ffdc36] overflow-hidden"
                             >
-                                <div className="aspect-square overflow-hidden relative">
+                                <div className="aspect-[4/5] overflow-hidden relative">
                                     <ImageWithFallback
                                         src={
                                             member.image_url && member.image_url.trim()
@@ -334,7 +334,7 @@ export default async function Committee() {
                                 key={member.id}
                                 className="group bg-white hover:shadow-2xl transition-all duration-300 border-l-4 border-[#c4a522] hover:border-[#ffdc36] overflow-hidden"
                             >
-                                <div className="aspect-square overflow-hidden relative">
+                                <div className="aspect-[4/5] overflow-hidden relative">
                                     <ImageWithFallback
                                         src={
                                             member.image_url && member.image_url.trim()
