@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.model.PasswordResetToken;
 import com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.model.User;
@@ -19,6 +20,7 @@ public class PasswordResetTokenService {
         this.passwordResetTokenRepository = passwordResetTokenRepository;
     }
 
+    @Transactional
     public PasswordResetToken createTokenForUser(User user) {
         passwordResetTokenRepository.deleteByUser(user);
         passwordResetTokenRepository.deleteExpiredTokens(LocalDateTime.now());
@@ -41,14 +43,17 @@ public class PasswordResetTokenService {
         return findValidToken(token).isPresent();
     }
 
+    @Transactional
     public void invalidateToken(String token) {
         passwordResetTokenRepository.findByToken(token).ifPresent(passwordResetTokenRepository::delete);
     }
 
+    @Transactional
     public void invalidateForUser(User user) {
         passwordResetTokenRepository.deleteByUser(user);
     }
 
+    @Transactional
     public void cleanupExpiredTokens() {
         passwordResetTokenRepository.deleteExpiredTokens(LocalDateTime.now());
     }

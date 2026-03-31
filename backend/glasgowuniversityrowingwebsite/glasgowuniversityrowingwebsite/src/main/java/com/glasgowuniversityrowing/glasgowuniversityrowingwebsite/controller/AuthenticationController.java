@@ -2,6 +2,7 @@ package com.glasgowuniversityrowing.glasgowuniversityrowingwebsite.controller;
 
 import java.util.Map;
 
+import static org.springframework.http.HttpStatus.BAD_GATEWAY;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -111,8 +112,13 @@ public class AuthenticationController {
         User user = userService.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(BAD_REQUEST, "User not found"));
 
-        PasswordResetToken token = passwordResetTokenService.createTokenForUser(user);
-        passwordResetEmailService.sendPasswordResetEmail(user, token.getToken());
+        try {
+            PasswordResetToken token = passwordResetTokenService.createTokenForUser(user);
+            passwordResetEmailService.sendPasswordResetEmail(user, token.getToken());
+        } catch (RuntimeException ex) {
+            throw new ResponseStatusException(BAD_GATEWAY,
+                    "Failed to send reset email. Check support email and SMTP app password configuration.", ex);
+        }
 
         return ResponseEntity.ok(Map.of("message", "Reset link sent"));
     }

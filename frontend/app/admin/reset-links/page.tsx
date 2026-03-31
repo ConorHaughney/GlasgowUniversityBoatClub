@@ -112,7 +112,29 @@ export default function AdminResetLinksPage() {
 
             const failed = responses.filter((res) => !res.ok);
             if (failed.length > 0) {
-                throw new Error("Some reset emails could not be sent.");
+                const firstFailed = failed[0];
+                let serverMessage = "Some reset emails could not be sent.";
+
+                try {
+                    const contentType = firstFailed.headers.get("content-type") || "";
+                    if (contentType.includes("application/json")) {
+                        const body = await firstFailed.json();
+                        if (body?.message && typeof body.message === "string") {
+                            serverMessage = body.message;
+                        } else if (body?.error && typeof body.error === "string") {
+                            serverMessage = body.error;
+                        }
+                    } else {
+                        const text = await firstFailed.text();
+                        if (text.trim().length > 0) {
+                            serverMessage = text;
+                        }
+                    }
+                } catch {
+                    // Keep fallback message when response body cannot be parsed.
+                }
+
+                throw new Error(serverMessage);
             }
 
             setMessage(`Reset links sent to ${selectedUserIds.length} user(s).`);
