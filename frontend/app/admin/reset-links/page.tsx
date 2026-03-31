@@ -38,9 +38,9 @@ export default function AdminResetLinksPage() {
                 if (Array.isArray(parsed) && parsed.includes("RESET_LINKS_ADMIN")) {
                     return true;
                 }
-                return role === "ADMIN" || !rawPermissions;
+                return role === "ADMIN" || role === "DEVELOPER" || !rawPermissions;
             } catch {
-                return role === "ADMIN" || !rawPermissions;
+                return role === "ADMIN" || role === "DEVELOPER" || !rawPermissions;
             }
         })();
 

@@ -188,16 +188,17 @@ export default function AdminDashboardPage() {
         const rawPermissions = localStorage.getItem("adminPermissions");
         const role = localStorage.getItem("adminRole");
         setAdminRole(role ?? "");
+        const isPrivilegedRole = role === "ADMIN" || role === "DEVELOPER";
         try {
             const parsed = rawPermissions ? JSON.parse(rawPermissions) : [];
             if (Array.isArray(parsed) && parsed.length > 0) {
                 setPermissions(new Set(parsed as Permission[]));
                 setIsLegacyFullAccess(false);
             } else {
-                setIsLegacyFullAccess(role === "ADMIN" || !rawPermissions);
+                setIsLegacyFullAccess(isPrivilegedRole || !rawPermissions);
             }
         } catch {
-            setIsLegacyFullAccess(role === "ADMIN" || !rawPermissions);
+            setIsLegacyFullAccess(isPrivilegedRole || !rawPermissions);
         }
 
         const loadInitialData = async () => {
@@ -222,7 +223,7 @@ export default function AdminDashboardPage() {
     const canManageEvents = hasPermission("EVENTS_MANAGE");
     const canManageResetLinks = hasPermission("RESET_LINKS_ADMIN");
     const canAccessPermissionsTab = hasPermission("USER_ADMIN");
-    const canEditPermissionOverrides = adminRole === "ADMIN";
+    const canEditPermissionOverrides = adminRole === "ADMIN" || adminRole === "DEVELOPER";
 
     useEffect(() => {
         const availableTabs: TabKey[] = [];
@@ -273,10 +274,10 @@ export default function AdminDashboardPage() {
         const data = Array.isArray(raw)
             ? raw.map((m: CommitteeMemberResponse) => ({
                   id: String(m.id),
-                  role: m.role,
-                  name: m.name,
-                  bio: m.bio,
-                  photoUrl: m.image_url,
+                                    role: m.role ?? "",
+                                    name: m.name ?? "",
+                                    bio: m.bio ?? "",
+                                    photoUrl: m.image_url ?? "",
               }))
             : [];
 

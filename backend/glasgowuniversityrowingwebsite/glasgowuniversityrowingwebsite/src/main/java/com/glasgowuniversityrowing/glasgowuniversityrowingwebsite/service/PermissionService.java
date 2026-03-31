@@ -30,7 +30,7 @@ public class PermissionService {
         }
 
         Set<String> defaults = resolveDefaultPermissionsForEmail(user.getEmail());
-        if (defaults.isEmpty() && "ADMIN".equalsIgnoreCase(user.getRole())) {
+        if ("ADMIN".equalsIgnoreCase(user.getRole()) || "DEVELOPER".equalsIgnoreCase(user.getRole())) {
             defaults = PermissionConstants.ALL;
         }
         Set<String> existing = user.getPermissionSet();
