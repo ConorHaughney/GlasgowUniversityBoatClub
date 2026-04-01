@@ -14,9 +14,16 @@ type Article = {
 };
 
 async function fetchById(id: number): Promise<Article | null> {
-    const res = await fetch(`${API}/api/news/${id}`, { cache: "no-store" });
-    if (!res.ok) return null;
-    return res.json();
+    try {
+        const res = await fetch(`${API}/api/news/${id}`, { cache: "no-store" });
+        if (!res.ok) return null;
+
+        const json: unknown = await res.json();
+        if (!json || typeof json !== "object") return null;
+        return json as Article;
+    } catch {
+        return null;
+    }
 }
 
 function formatDate(iso?: string) {

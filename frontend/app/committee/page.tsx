@@ -13,9 +13,27 @@ type CommitteeMember = {
 };
 
 async function getCommittee(): Promise<CommitteeMember[]> {
-    const res = await fetch(`${API_URL}/api/committee`, { cache: "no-store" });
-    if (!res.ok) return [];
-    return res.json();
+    try {
+        const res = await fetch(`${API_URL}/api/committee`, { cache: "no-store" });
+        if (!res.ok) return [];
+
+        const json: unknown = await res.json();
+        if (!Array.isArray(json)) return [];
+
+        return json.map((member) => {
+            const record = (member ?? {}) as Record<string, unknown>;
+            return {
+                id: Number(record.id ?? 0),
+                role: String(record.role ?? ""),
+                name: String(record.name ?? ""),
+                bio: String(record.bio ?? ""),
+                image_url: String(record.image_url ?? ""),
+                email: record.email ? String(record.email) : undefined,
+            } satisfies CommitteeMember;
+        });
+    } catch {
+        return [];
+    }
 }
 
 // Helper to split name into first and last
